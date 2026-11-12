@@ -20,6 +20,8 @@ const windowCamera = createWindowCamera(cameraCanvas, (state, message) => {
   byId("preview-camera-status").textContent = message;
   gameCameraStatus.textContent = message;
   gameCameraStatus.hidden = !message || state === "live";
+}, (video, time) => {
+  if (phase === "countdown" || phase === "playing") shakeMotion.update(video, time, phase === "playing");
 });
 const countdownOverlay = byId("countdown-overlay");
 const feedback = byId("feedback");
@@ -27,6 +29,10 @@ const sleepFace = byId("sleep-face");
 const roomEffects = createRoomEffects(byId("room-effects"));
 const attackButtons = new Map();
 const motionInput = createMotionInput(applyMotion);
+const shakeMotion = createShakeMotion(() => motionInput.emit("shake"), () => {
+  shakeModelError = true;
+  if (phase === "playing" && !activeButton) feedback.textContent = "손 인식을 시작하지 못했어요. 공격 버튼으로 플레이할 수 있어요.";
+});
 
 let phase = "ready";
 let sleep = MAX_SLEEP;
@@ -37,6 +43,7 @@ let activeButton;
 let soundOn = true;
 let audioContext;
 let soundVolume;
+let shakeModelError = false;
 
 for (const gesture of gestures) {
   const icon = document.createElement("span");
@@ -91,6 +98,8 @@ function showSleep() {
 function startRound() {
   clearInterval(timer);
   clearAttack();
+  shakeMotion.reset();
+  shakeModelError = false;
   sleep = MAX_SLEEP;
   phase = "countdown";
   roundStartsAt = performance.now() + COUNTDOWN_SECONDS * 1000;
@@ -104,8 +113,7 @@ function startRound() {
   document.body.classList.remove("on-start");
   document.body.classList.add("in-game");
   byId("game-window").append(cameraCanvas);
-  if (cameraToggle.checked) windowCamera.start();
-  else windowCamera.stop();
+  windowCamera.start(cameraToggle.checked);
   countdownOverlay.hidden = false;
   playScreen.focus();
   updateTimer();
@@ -133,7 +141,9 @@ function updateTimer() {
     phase = "playing";
     countdownOverlay.hidden = true;
     setAttackButtonsEnabled(true);
-    feedback.textContent = "공격 버튼을 눌러 깨워 주세요.";
+    feedback.textContent = shakeModelError
+      ? "손 인식을 시작하지 못했어요. 공격 버튼으로 플레이할 수 있어요."
+      : "양 주먹으로 2초 이상 두드리거나 공격 버튼을 눌러 주세요.";
   }
 }
 
@@ -210,6 +220,7 @@ function finishRound(won) {
   clearInterval(timer);
   clearAttack();
   phase = "result";
+  if (!cameraToggle.checked) windowCamera.stop();
   setAttackButtonsEnabled(false);
   countdownOverlay.hidden = true;
   feedback.textContent = "";

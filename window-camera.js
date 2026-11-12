@@ -1,9 +1,20 @@
 const VISION_CDN = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.18";
 const MEDIAPIPE_MODELS = "https://storage.googleapis.com/mediapipe-models";
+let visionRuntime;
+
+function loadVisionRuntime() {
+  visionRuntime ??= import(`${VISION_CDN}/vision_bundle.mjs`).then(async (vision) => ({
+    ...vision,
+    files: await vision.FilesetResolver.forVisionTasks(`${VISION_CDN}/wasm`),
+  })).catch((error) => {
+    visionRuntime = null;
+    throw error;
+  });
+  return visionRuntime;
+}
 
 async function loadWindowModels() {
-  const { FaceDetector, FilesetResolver, ImageSegmenter } = await import(`${VISION_CDN}/vision_bundle.mjs`);
-  const files = await FilesetResolver.forVisionTasks(`${VISION_CDN}/wasm`);
+  const { FaceDetector, ImageSegmenter, files } = await loadVisionRuntime();
   const detector = await FaceDetector.createFromOptions(files, {
     baseOptions: { modelAssetPath: `${MEDIAPIPE_MODELS}/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite` },
     runningMode: "VIDEO",
@@ -23,7 +34,7 @@ async function loadWindowModels() {
   }
 }
 
-function createWindowCamera(canvas, showStatus) {
+function createWindowCamera(canvas, showStatus, onFrame) {
   const context = canvas.getContext("2d");
   const video = document.createElement("video");
   video.muted = true;
@@ -57,6 +68,8 @@ function createWindowCamera(canvas, showStatus) {
   reflection.addColorStop(0.51, "transparent");
 
   let modelsPromise;
+  let windowModels;
+  let windowVisible = false;
   let stream;
   let frame = 0;
   let requestId = 0;
@@ -83,6 +96,7 @@ function createWindowCamera(canvas, showStatus) {
     previous?.getTracks().forEach((track) => track.stop());
     video.pause();
     video.srcObject = null;
+    windowVisible = false;
     context.clearRect(0, 0, canvas.width, canvas.height);
     cropBounds = null;
     setStatus(next, message);
@@ -157,9 +171,8 @@ function createWindowCamera(canvas, showStatus) {
   }
 
   function render(time, models) {
-    if (video.readyState < 2 || time - lastFrameAt < 64 || video.currentTime === lastVideoTime) return;
+    if (time - lastFrameAt < 64) return;
     lastFrameAt = time;
-    lastVideoTime = video.currentTime;
     if (time - lastDetectionAt >= 120) {
       lastDetectionAt = time;
       findFace(models.detector, time);
@@ -180,8 +193,43 @@ function createWindowCamera(canvas, showStatus) {
     setStatus("live", "웹캠 연결됨");
   }
 
-  async function start() {
-    if (requested) return;
+  function disableWindow(message) {
+    windowVisible = false;
+    cropBounds = null;
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    setStatus("window-error", message);
+  }
+
+  async function prepareWindow(id) {
+    if (windowModels) return;
+    setStatus("loading", "웹캠 영상에서 사람을 분리할 준비를 하고 있어요.");
+    modelsPromise ??= loadWindowModels().catch((error) => {
+      modelsPromise = null;
+      throw error;
+    });
+    try {
+      windowModels = await modelsPromise;
+    } catch (error) {
+      if (id !== requestId || !windowVisible) return;
+      console.warn("Window camera could not load the composite models.", error);
+      disableWindow("창문 합성을 불러오지 못했어요. 인터넷 연결을 확인해 주세요.");
+    }
+  }
+
+  async function start(visible = true) {
+    const changed = windowVisible !== visible;
+    windowVisible = visible;
+    if (!visible) {
+      cropBounds = null;
+      context.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    if (requested) {
+      if (changed && video.readyState >= 2) {
+        if (windowVisible) prepareWindow(requestId);
+        else setStatus("live", "웹캠 연결됨");
+      }
+      return;
+    }
     if (!navigator.mediaDevices?.getUserMedia) {
       setStatus("error", "Chrome이나 Edge에서 로컬 미리보기 주소로 열어 주세요.");
       return;
@@ -205,26 +253,28 @@ function createWindowCamera(canvas, showStatus) {
       video.srcObject = acquired;
       await video.play();
       if (id !== requestId) return;
-      setStatus("loading", "웹캠 영상에서 사람을 분리할 준비를 하고 있어요.");
-      modelsPromise ??= loadWindowModels().catch((error) => {
-        modelsPromise = null;
-        throw error;
-      });
-      const models = await modelsPromise;
-      if (id !== requestId) return;
       analysis.width = 384;
       analysis.height = Math.max(1, Math.round(analysis.width * video.videoHeight / video.videoWidth));
       lastFaceAt = lastDetectionAt = lastFrameAt = -Infinity;
       lastVideoTime = -1;
+      if (windowVisible) prepareWindow(id);
+      else setStatus("live", "웹캠 연결됨");
 
       function update(time) {
-        try {
-          render(time, models);
-          frame = requestAnimationFrame(update);
-        } catch (error) {
-          console.warn("Window camera could not render the current frame.", error);
-          stop("error", "얼굴 합성을 다시 시작해 주세요.");
+        if (video.readyState >= 2 && video.currentTime !== lastVideoTime) {
+          lastVideoTime = video.currentTime;
+          onFrame(video, time);
+          if (id !== requestId) return;
+          if (windowVisible && windowModels) {
+            try {
+              render(time, windowModels);
+            } catch (error) {
+              console.warn("Window camera could not render the current frame.", error);
+              disableWindow("창문 합성을 다시 시작해 주세요.");
+            }
+          }
         }
+        frame = requestAnimationFrame(update);
       }
       frame = requestAnimationFrame(update);
     } catch (error) {
@@ -234,7 +284,7 @@ function createWindowCamera(canvas, showStatus) {
         NotFoundError: "연결된 웹캠을 찾을 수 없어요.",
         NotReadableError: "다른 앱에서 웹캠을 사용 중인지 확인해 주세요.",
       };
-      stop("error", messages[error.name] ?? "합성 모델을 불러오지 못했어요. 인터넷 연결을 확인하고 다시 켜 주세요.");
+      stop("error", messages[error.name] ?? "웹캠을 시작하지 못했어요. 다시 켜 주세요.");
     }
   }
 
