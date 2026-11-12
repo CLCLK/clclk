@@ -13,7 +13,6 @@ const cameraToggle = byId("camera-toggle");
 const cameraPreview = byId("camera-preview");
 const startPreview = byId("start-preview");
 const countdownOverlay = byId("countdown-overlay");
-const resultOverlay = byId("result-overlay");
 const feedback = byId("feedback");
 const sleepFace = byId("sleep-face");
 const roomEffects = createRoomEffects(byId("room-effects"));
@@ -91,14 +90,12 @@ function startRound() {
   setAttackButtonsEnabled(false);
   feedback.textContent = "카운트다운이 끝나면 버튼을 눌러 주세요.";
   startScreen.hidden = true;
-  resultScreen.hidden = true;
-  resultOverlay.hidden = true;
+  hideResult();
   playScreen.hidden = false;
   document.body.classList.remove("on-start");
   document.body.classList.add("in-game");
   cameraPreview.hidden = !cameraToggle.checked;
   gameRoom.classList.toggle("camera-example", cameraToggle.checked);
-  byId("scene").classList.remove("awake");
   countdownOverlay.hidden = false;
   playScreen.focus();
   updateTimer();
@@ -203,19 +200,20 @@ function finishRound(won) {
   clearInterval(timer);
   clearAttack();
   phase = "result";
-  playScreen.hidden = true;
-  document.body.classList.remove("in-game");
+  setAttackButtonsEnabled(false);
   countdownOverlay.hidden = true;
-  cameraPreview.hidden = true;
+  feedback.textContent = "";
+  gameRoom.classList.add(won ? "round-won" : "round-lost");
+  const title = byId("result-title");
+  title.textContent = won ? "기상 성공!" : "무단 결근!";
+  byId("result-message").textContent = won ? "오늘도 출근할게요" : "이번 달은 …";
   resultScreen.hidden = false;
-  resultOverlay.hidden = false;
-  byId("scene").classList.toggle("awake", won);
-  byId("result-icon").textContent = won ? "☀" : "☾";
-  byId("result-title").textContent = won ? "기상 성공!" : "기상 실패!";
-  byId("result-message").textContent = won
-    ? "8시 전에 캐릭터가 일어났어요. 이제 출근할 시간이에요!"
-    : `8시가 됐어요. 캐릭터는 아직 잠들어 있어요. 남은 졸음 ${sleep}.`;
-  byId("result-title").focus();
+  title.focus({ preventScroll: true });
+}
+
+function hideResult() {
+  resultScreen.hidden = true;
+  gameRoom.classList.remove("round-won", "round-lost");
 }
 
 cameraToggle.addEventListener("change", () => {
@@ -232,11 +230,10 @@ byId("sound-button").addEventListener("click", (event) => {
 });
 byId("restart-button").addEventListener("click", () => {
   phase = "ready";
-  resultScreen.hidden = true;
-  resultOverlay.hidden = true;
-  byId("scene").classList.remove("awake");
-  byId("scene-label").hidden = false;
+  hideResult();
+  playScreen.hidden = true;
   startScreen.hidden = false;
+  document.body.classList.remove("in-game");
   document.body.classList.add("on-start");
   byId("start-button").focus();
 });

@@ -10,8 +10,6 @@
   padding-block: 12px;
 }
 
-.in-game .topbar, .in-game .layout > .panel, .in-game .layout > .scene { display: none; }
-.in-game .layout { display: block; min-width: 0; padding: 0; }
 .play-screen:focus { outline: none; }
 
 .game-room {

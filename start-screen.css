@@ -9,8 +9,6 @@
   min-height: 100svh;
   padding: 24px 0;
 }
-.on-start .topbar, .on-start .layout > .panel, .on-start .layout > .scene { display: none; }
-.on-start .layout { display: block; padding: 0; }
 
 .start-screen {
   --guide-art-height: clamp(85px, 9vw, 128px);
