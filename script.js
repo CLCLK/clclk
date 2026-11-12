@@ -60,8 +60,7 @@ let attackTimer;
 let repeatPopupTimer;
 let activeButton;
 let soundOn = true;
-let audioContext;
-let soundVolume;
+const gameAudio = createGameAudio();
 let handModelError = false;
 let lastEffectiveGestureId = null;
 let handStatus = { message: "", active: false };
@@ -74,8 +73,17 @@ function showRecognitionFeedback() {
   if (status.message && feedback.textContent !== status.message) feedback.textContent = status.message;
 }
 
-for (const gesture of gestures) {
+for (const [index, gesture] of gestures.entries()) {
   const guide = document.createElement("li");
+  guide.dataset.gesture = gesture.id;
+  const guideMeta = document.createElement("div");
+  guideMeta.className = "gesture-meta";
+  const guideNumber = document.createElement("span");
+  guideNumber.textContent = `0${index + 1}`;
+  const guideDuration = document.createElement("span");
+  guideDuration.className = "gesture-duration";
+  guideDuration.textContent = gesture.duration;
+  guideMeta.append(guideNumber, guideDuration);
   const illustration = document.createElement("div");
   illustration.className = `gesture-art gesture-art-${gesture.id}`;
   illustration.setAttribute("aria-hidden", "true");
@@ -83,19 +91,19 @@ for (const gesture of gestures) {
   label.textContent = gesture.label;
   const instruction = document.createElement("p");
   instruction.textContent = gesture.instruction;
-  guide.append(illustration, label, instruction);
+  guide.append(guideMeta, illustration, label, instruction);
   byId("gesture-guide").append(guide);
 
   const button = document.createElement("button");
   button.type = "button";
+  button.dataset.gesture = gesture.id;
+  button.dataset.duration = gesture.duration;
   const buttonLabel = document.createElement("span");
   buttonLabel.textContent = gesture.label;
-  if (gesture.id === "wind") {
-    const description = document.createElement("small");
-    description.className = "attack-instruction";
-    description.textContent = gesture.instruction;
-    buttonLabel.append(description);
-  }
+  const description = document.createElement("small");
+  description.className = "attack-instruction";
+  description.textContent = gesture.instruction;
+  buttonLabel.append(description);
   button.append(illustration.cloneNode(true), buttonLabel);
   button.addEventListener("click", () => motionInput.emit(gesture.id));
   byId("test-buttons").append(button);
@@ -128,6 +136,8 @@ function showSleep() {
 }
 
 function startRound() {
+  gameAudio.stop();
+  gameAudio.unlock();
   clearInterval(timer);
   hideRepeatPopup();
   clearAttack();
@@ -176,6 +186,7 @@ function updateTimer() {
 
   if (phase === "countdown") {
     phase = "playing";
+    gameAudio.startMusic();
     countdownOverlay.hidden = true;
     setAttackButtonsEnabled(true);
     feedback.textContent = handModelError
@@ -230,12 +241,12 @@ function showAttack(gestureId) {
   clearAttack();
   activeButton = attackButtons.get(gestureId);
   activeButton.classList.add("is-active");
+  gameAudio.play(gestureId);
   let duration = 640;
   if (gestureId === "shake") {
     // 다른 공격에서 넘어와도 흔들림 애니메이션을 처음부터 재생합니다.
     void gameRoom.offsetWidth;
     gameRoom.classList.add("is-shaking");
-    playShakeSound();
   } else if (gestureId === "tickle") {
     void gameRoom.offsetWidth;
     gameRoom.classList.add("is-tickled");
@@ -250,28 +261,9 @@ function showAttack(gestureId) {
   }, duration);
 }
 
-function playShakeSound() {
-  if (!soundOn || !window.AudioContext) return;
-  if (!audioContext) {
-    audioContext = new AudioContext();
-    soundVolume = audioContext.createGain();
-    soundVolume.connect(audioContext.destination);
-  }
-  if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
-  const tone = audioContext.createOscillator();
-  const volume = audioContext.createGain();
-  const now = audioContext.currentTime;
-  tone.type = "triangle";
-  tone.frequency.setValueAtTime(110, now);
-  tone.frequency.exponentialRampToValueAtTime(48, now + 0.38);
-  volume.gain.setValueAtTime(0.12, now);
-  volume.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-  tone.connect(volume).connect(soundVolume);
-  tone.start(now);
-  tone.stop(now + 0.4);
-}
-
 function finishRound(won) {
+  gameAudio.stop();
+  gameAudio.play(won ? "win" : "lose");
   clearInterval(timer);
   hideRepeatPopup();
   clearAttack();
@@ -282,6 +274,8 @@ function finishRound(won) {
   gameRoom.classList.add(won ? "round-won" : "round-lost");
   const title = byId("result-title");
   title.textContent = won ? "기상 성공!" : "무단 결근!";
+  byId("result-stamp").textContent = won ? "✦" : "Zz";
+  byId("result-eyebrow").textContent = won ? "오늘의 기상 미션 완료" : "앗, 벌써 오전 8시";
   byId("result-message").textContent = won ? "오늘도 출근할게요" : "이번 달은 …";
   resultScreen.hidden = false;
   title.focus({ preventScroll: true });
@@ -305,15 +299,17 @@ byId("preview-button").addEventListener("click", () => {
 startPreview.addEventListener("close", () => {
   if (phase === "ready") windowCamera.start(cameraToggle.checked);
 });
-window.addEventListener("pagehide", () => windowCamera.stop());
+window.addEventListener("pagehide", () => { windowCamera.stop(); gameAudio.stop(); });
 byId("replay-button").addEventListener("click", startRound);
+byId("result-replay-button").addEventListener("click", startRound);
 byId("sound-button").addEventListener("click", (event) => {
   soundOn = !soundOn;
-  if (soundVolume) soundVolume.gain.value = soundOn ? 1 : 0;
+  gameAudio.setEnabled(soundOn);
   event.currentTarget.setAttribute("aria-pressed", String(soundOn));
   byId("sound-state").textContent = soundOn ? "ON" : "OFF";
 });
 function returnToStart() {
+  gameAudio.stop();
   clearInterval(timer);
   hideRepeatPopup();
   clearAttack();

@@ -1,10 +1,11 @@
+@font-face { font-family: 'Jua'; src: url('fonts/Jua-Regular.ttf') format('truetype'); font-style: normal; font-weight: 400; font-display: swap; }
 :root {
   color-scheme: light;
   font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
   color: #222856;
   background: #f8f4eb;
-  --ink: #222856;
-  --blue: #3545a0;
+  --ink: #303463;
+  --blue: #343887;
   --muted: #545a76;
   --line: #ddd8ce;
   --paper: #fffcf6;

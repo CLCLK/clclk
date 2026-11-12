@@ -1,11 +1,11 @@
 .in-game {
-  background: radial-gradient(ellipse at top, #f4ecfc, #f4eddf 75%);
+  background: linear-gradient(140deg, #e8effb, #f7eadb 75%);
 }
 
 .in-game .shell {
   display: grid;
   align-items: center;
-  width: min(calc(100% - 32px), max(700px, calc((100dvh - 210px) * 1.6)));
+  width: min(calc(100% - 32px), max(700px, calc((100dvh - 260px) * 1.6)));
   min-height: 100dvh;
   padding-block: 12px;
 }
@@ -20,7 +20,7 @@
   overflow: hidden;
   container-type: inline-size;
   aspect-ratio: 1586 / 992;
-  border-radius: 18px 18px 0 0;
+  border-radius: 24px 24px 0 0;
   background: #d6e3f9;
   box-shadow: 0 8px 30px #31275723;
 }
@@ -206,70 +206,51 @@
   line-height: 1.5;
 }
 
+/* The controls share the room's ink, cream, pink and glass-blue palette. */
 .game-controls {
-  container-type: inline-size;
-  position: relative;
-  display: grid;
-  grid-template-columns: 1.15fr 1.4fr 0.65fr;
-  align-items: center;
-  gap: clamp(12px, 2vw, 32px);
-  padding: 14px clamp(14px, 2vw, 29px);
-  border: 1px solid #dfd6c9;
-  border-top: 2px solid #3d4a98;
-  border-radius: 0 0 18px 18px;
-  background: #fffcf6;
-  box-shadow: 0 8px 25px #31275715;
+  container-type: inline-size; position: relative; display: grid;
+  grid-template-columns: minmax(165px, .85fr) minmax(0, 1.65fr) minmax(90px, .43fr);
+  align-items: center; gap: clamp(12px, 1.6vw, 27px); padding: 18px clamp(16px, 1.8vw, 30px);
+  border: 1px solid #b6bdd4; border-top: 2px solid #343887; border-radius: 0 0 24px 24px;
+  background: #fffaf1; box-shadow: 0 12px 28px #30346314;
 }
-.game-controls .sleep-heading { margin: 0; align-items: center; font-size: clamp(17px, 1.45vw, 22px); }
-.game-controls .sleep-heading strong { color: #bb351f; font-size: clamp(21px, 1.9vw, 28px); font-weight: 900; }
-.game-controls progress { height: 34px; border: 2px solid #26345d; border-radius: 9px; background: #26345d; }
-.game-controls progress::-webkit-progress-bar { background: #26345d; }
-.game-controls progress::-webkit-progress-value { background: #f16a3c; border-radius: 5px; }
-.game-controls progress::-moz-progress-bar { background: #f16a3c; border-radius: 5px; }
-.game-controls .feedback { margin-top: 6px; min-height: 2.6em; }
-
-.attack-buttons {
-  --guide-art-height: clamp(42px, 4.5cqw, 58px);
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
-}
-.attack-buttons button, .game-actions button {
-  min-height: 42px;
-  border: 1px solid #d1cbe8;
-  border-radius: 10px;
-  background: #f1edfa;
-  color: var(--ink);
-  font-size: clamp(12px, 1.15vw, 16px);
-  font-weight: 700;
-  word-break: keep-all;
-}
-.attack-buttons button { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 72px; padding: 5px 7px; }
-.attack-buttons .gesture-art { width: calc(var(--guide-art-height) * 1.25); flex-shrink: 0; margin: 0; border-radius: 7px; background-color: #fffcf6; }
-.attack-instruction { display: block; margin-top: 3px; font-size: clamp(10px, 0.8vw, 12px); font-weight: 400; line-height: 1.35; }
+.game-controls .sleep-heading { margin: 0; align-items: center; gap: 8px; }
+.sleep-heading label { display: flex; align-items: center; gap: 7px; font: 400 clamp(18px, 1.35vw, 25px)/1.2 'Jua', sans-serif; white-space: nowrap; }
+.sleep-symbol { display: grid; place-items: center; width: 31px; height: 31px; border-radius: 50% 50% 35% 50%; background: #e0e7f8; color: #343887; font: 400 20px 'Jua', sans-serif; }
+.game-controls .sleep-heading strong { color: #343887; font: 400 clamp(22px, 1.8vw, 33px)/1 'Jua', sans-serif; white-space: nowrap; }
+.game-controls progress { height: 25px; margin-top: 14px; border: 1px solid #acb7d8; padding: 3px; border-radius: 30px; background: #e7ebf5; }
+.game-controls progress::-webkit-progress-bar { background: #e7ebf5; border-radius: 30px; }
+.game-controls progress::-webkit-progress-value { border-radius: 30px; background: linear-gradient(90deg, #8995d3, #454d9d); }
+.game-controls progress::-moz-progress-bar { border-radius: 30px; background: linear-gradient(90deg, #8995d3, #454d9d); }
+.sleep-scale { display: flex; justify-content: space-between; margin-top: 7px; color: #777e99; font-size: 12px; }
+.game-controls .feedback { margin-top: 13px; min-height: 3em; font-size: clamp(12px, .9vw, 16px); color: #515978; }
+.attack-buttons { --guide-art-height: clamp(44px, 4.5cqw, 65px); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.attack-buttons button { display: flex; align-items: center; gap: 10px; min-height: 83px; padding: 10px; border: 1.5px solid #b6bdd4; border-radius: 16px; background: #f1ecdfff; color: #343887; text-align: left; box-shadow: 0 3px 0 #34388718; }
+.attack-buttons button[data-gesture='tickle'] { background: #f9e5ec; }.attack-buttons button[data-gesture='noise'] { background: #fff0d9; }.attack-buttons button[data-gesture='wind'] { background: #e5eefb; }
+.attack-buttons button > span { font: 400 clamp(19px, 1.35vw, 25px)/1.15 'Jua', sans-serif; }
+.attack-buttons .gesture-art { width: calc(var(--guide-art-height) * 1.2); flex-shrink: 0; margin: 0; background-color: transparent; border-radius: 0; }
+.attack-instruction { display: block; margin-top: 5px; font: 400 clamp(12px, .87vw, 16px)/1.4 'Malgun Gothic', sans-serif; letter-spacing: -.035em; word-break: keep-all; color: #505773; }
+.attack-buttons button:hover:enabled:not(.is-active) { border-color: #343887; transform: translateY(-2px); box-shadow: 0 5px 0 #34388725; }
+.attack-buttons button:active:enabled, .attack-buttons button.is-active { transform: translateY(2px); background: #cbd7f3; border-color: #343887; box-shadow: inset 0 0 0 1px #343887, 0 1px 0 #343887; }
+.attack-buttons button:disabled:not(.is-active) { opacity: .55; }
+.game-actions { display: grid; gap: 8px; }.game-actions button { min-height: 40px; padding: 6px 9px; border: 1px solid #bbc1d7; border-radius: 11px; background: transparent; color: #343887; font-size: clamp(12px, .9vw, 16px); font-weight: 700; white-space: nowrap; }.game-actions button:hover { background: #e8edf7; }.game-actions strong { color: inherit; }
+#replay-button { background: #343887; border-color: #343887; color: #fffaf1; }#replay-button:hover { background: #474c9e; }
 .repeat-popup { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; background: #151b4b38; pointer-events: none; }
-.repeat-popup p { width: min(620px, 100%); padding: clamp(24px, 3vw, 42px); border: 3px solid #3d4a98; border-radius: 22px; background: #fffcf6; color: var(--ink); box-shadow: 0 12px 45px #151b4b40; font-size: clamp(20px, 2.2vw, 30px); font-weight: 700; text-align: center; line-height: 1.6; word-break: keep-all; }
-.attack-buttons button:hover:enabled:not(.is-active), .game-actions button:hover { border-color: #9c93cd; background: #e9e2f8; }
-.attack-buttons button:active:enabled, .attack-buttons button.is-active {
-  transform: translateY(2px);
-  background: #3d4a98;
-  border-color: #2b3679;
-  color: #fff;
-  box-shadow: inset 0 2px 4px #151b4b58;
+.repeat-popup p { width: min(680px, 100%); padding: clamp(24px, 3vw, 42px); border: 2px solid #343887; border-radius: 26px; background: #fffaf1; color: var(--ink); box-shadow: 0 8px 0 #34388735, 0 12px 45px #151b4b30; font: 400 clamp(22px, 2.2vw, 34px)/1.5 'Jua', sans-serif; text-align: center; word-break: keep-all; }
+@media (min-width: 1500px) {
+ .game-controls { grid-template-columns: minmax(230px, .9fr) minmax(0, 2.8fr) minmax(110px, .4fr); }
+ .attack-buttons { grid-template-columns: repeat(4, minmax(0, 1fr)); --guide-art-height: 58px; }
+ .attack-buttons button { flex-direction: column; justify-content: start; text-align: center; gap: 7px; padding: 10px 9px 13px; min-height: 166px; }
+ .attack-buttons button > span { font-size: 23px; }.attack-instruction { font-size: 14px; }
+ .sleep-heading { flex-wrap: wrap; }
 }
-.attack-buttons button:disabled:not(.is-active) { opacity: 0.6; }
-.game-actions { display: grid; gap: 8px; }
-.game-actions button { padding: 4px 11px; background: #f9f6ef; }
-.game-actions strong { color: var(--blue); }
-#replay-button { background: var(--yellow); border-color: #c99d3d; }
-#replay-button:hover { background: #ffe39a; }
-
 @media (max-width: 690px) {
-  .in-game .shell { width: calc(100% - 20px); }
-  .game-controls { grid-template-columns: 1fr; gap: 8px; padding: 10px; }
-  .game-controls .feedback { min-height: 1.5em; }
-  .game-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .game-actions button { padding-inline: 5px; }
+ .in-game .shell { width: calc(100% - 20px); padding-block: 10px; }
+ .game-controls { grid-template-columns: 1fr; gap: 16px; padding: 16px 13px; }
+ .game-controls .feedback { min-height: 1.5em; margin-top: 9px; }
+ .game-controls .sleep-heading strong { font-size: 28px; }
+ .attack-buttons { --guide-art-height: 43px; gap: 9px; }.attack-buttons button { min-height: 106px; flex-direction: column; text-align: center; padding: 9px 7px; gap: 3px; }.attack-buttons button > span { font-size: 21px; }.attack-instruction { font-size: 12px; }
+ .game-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 @media (prefers-reduced-motion: reduce) {

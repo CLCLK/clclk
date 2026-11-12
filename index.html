@@ -4,44 +4,61 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f7f3e9">
+  <link rel="preload" href="fonts/Jua-Regular.ttf" as="font" type="font/ttf" crossorigin>
   <title>일어나, 출근해야지</title>
-  <link rel="stylesheet" href="style.css?v=20261112-round30">
-  <link rel="stylesheet" href="start-screen.css?v=20261112-round30">
-  <link rel="stylesheet" href="game-screen.css?v=20261112-round30">
-  <link rel="stylesheet" href="result-scene.css?v=20261112-round30">
+  <link rel="stylesheet" href="style.css?v=20261113-analog-audio1">
+  <link rel="stylesheet" href="start-screen.css?v=20261113-analog-audio1">
+  <link rel="stylesheet" href="game-screen.css?v=20261113-analog-audio1">
+  <link rel="stylesheet" href="result-scene.css?v=20261113-analog-audio1">
+  <link rel="stylesheet" href="analog-ui.css?v=20261113-analog-audio1">
+  <link rel="preload" href="start-illustration.webp" as="image">
   <link rel="preload" href="game-room-shallow.webp" as="image">
   <link rel="preload" href="game-room-near-awake.webp" as="image">
   <link rel="preload" href="result-empty-bed.webp" as="image">
   <link rel="preload" href="result-failure-face.webp" as="image">
-  <script src="motion-input.js?v=20261112-round30" defer></script>
-  <script src="room-effects.js?v=20261112-round30" defer></script>
-  <script src="window-camera.js?v=20261112-round30" defer></script>
-  <script src="shake-motion.js?v=20261112-round30" defer></script>
-  <script src="tickle-motion.js?v=20261112-round30" defer></script>
-  <script src="wind-motion.js?v=20261112-round30" defer></script>
-  <script src="hand-motion.js?v=20261112-round30" defer></script>
-  <script src="face-motion.js?v=20261112-round30" defer></script>
-  <script src="script.js?v=20261112-round30" defer></script>
+  <script src="motion-input.js?v=20261113-analog-audio1" defer></script>
+  <script src="room-effects.js?v=20261113-analog-audio1" defer></script>
+  <script src="camera-framing.js?v=20261113-analog-audio1" defer></script>
+  <script src="window-camera.js?v=20261113-analog-audio1" defer></script>
+  <script src="shake-motion.js?v=20261113-analog-audio1" defer></script>
+  <script src="tickle-motion.js?v=20261113-analog-audio1" defer></script>
+  <script src="wind-motion.js?v=20261113-analog-audio1" defer></script>
+  <script src="hand-motion.js?v=20261113-analog-audio1" defer></script>
+  <script src="face-motion.js?v=20261113-analog-audio1" defer></script>
+  <script src="game-audio.js?v=20261113-analog-audio1" defer></script>
+  <script src="script.js?v=20261113-analog-audio1" defer></script>
 </head>
 <body class="on-start">
   <div class="shell">
     <main>
       <section class="start-screen" id="start-screen" aria-labelledby="game-title">
+        <img class="start-illustration" src="start-illustration.webp" alt="" aria-hidden="true">
         <div class="start-hero">
+          <p class="hero-eyebrow"><span aria-hidden="true">✦</span> 아침 7시, 깨울 시간!</p>
           <h1 id="game-title">일어나,<br><span>출근해야지</span></h1>
           <p class="intro">달콤한 늦잠에 빠진 직장인을 깨워 주세요!<br>오전 8시까지 못 일어나면 무단 결근! 남은 시간은 30초!</p>
+          <div class="hero-clock-scene">
+            <div class="hero-clock" role="img" aria-label="오전 7시를 가리키는 알람시계. 제한 시간 30초.">
+              <span class="clock-sticker">남은 시간 <b>30초!</b></span>
+              <div class="clock-display"><span class="clock-am">AM</span><strong>07<span>:</span>00</strong></div>
+              <span class="clock-brand" aria-hidden="true">오늘도 무사히 출근!</span>
+            </div>
+          </div>
           <button class="primary" id="start-button" type="button">게임 시작 <span aria-hidden="true">→</span></button>
-          <div class="start-room-art" aria-hidden="true"></div>
-          <ol class="start-rules" aria-label="게임 규칙">
-            <li>시계가 8시가 되기 전! 졸음 게이지를 0으로 만들어야 해요.</li>
-            <li>깨우기 공격을 하면 졸음 게이지가 줄어들어요.</li>
-            <li>같은 공격을 연속으로 하면 게이지가 줄지 않아요.</li>
-          </ol>
+          <p class="start-play-hint">몸으로 깨워도, 버튼으로 깨워도 좋아요.</p>
         </div>
 
         <section class="start-guide" aria-labelledby="start-guide-title">
-          <h2 id="start-guide-title">깨우는 방법</h2>
+          <div class="guide-heading"><div><span class="section-kicker">준비됐나요?</span><h2 id="start-guide-title">이렇게 깨워 주세요</h2></div><span class="guide-count">4가지 방법</span></div>
           <ul class="gesture-cards" id="gesture-guide"></ul>
+          <section class="rules-panel" aria-labelledby="rules-title">
+            <h2 id="rules-title">기상 성공의 법칙</h2>
+            <ol class="start-rules">
+              <li><span>8시가 되기 전, <strong>졸음 게이지를 0으로!</strong></span></li>
+              <li><span>깨우기 공격 한 번에 <strong>졸음 −10</strong></span></li>
+              <li><span>같은 방법은 연속으로 효과가 없어요. <strong>번갈아 공격!</strong></span></li>
+            </ol>
+          </section>
           <div class="start-camera">
             <label class="start-camera-label" id="camera-toggle-label" for="camera-toggle">웹캠 화면 표시</label>
             <div class="start-camera-controls">
@@ -71,6 +88,7 @@
         <div class="repeat-popup" id="repeat-popup" role="status" aria-live="polite" hidden>
           <p>같은 방법을 연속으로 쓰면 효과가 없어요. 다른 방법으로 깨워주세요.</p>
         </div>
+        <div class="room-viewport">
         <div class="game-room" id="game-room" role="group" aria-label="아침의 자취방과 이불 속에 잠든 캐릭터">
           <div class="room-art room-backdrop" aria-hidden="true"></div>
           <div class="room-window" id="game-window" aria-hidden="true">
@@ -104,9 +122,11 @@
           <div class="room-clock" aria-label="게임 속 시각"><time id="game-clock" datetime="07:00">07:00</time></div>
           <p class="game-camera-status" id="game-camera-status" role="status" hidden></p>
           <section class="round-result" id="result-screen" aria-labelledby="result-title" hidden>
+            <span class="result-stamp" id="result-stamp" aria-hidden="true"></span>
+            <span class="result-eyebrow" id="result-eyebrow"></span>
             <h2 id="result-title" tabindex="-1"></h2>
             <p id="result-message"></p>
-            <button id="restart-button" type="button">시작 화면</button>
+            <div class="result-actions"><button id="result-replay-button" type="button">다시 도전하기 <span aria-hidden="true">↗</span></button><button id="restart-button" type="button">시작 화면으로</button></div>
           </section>
           <div class="scene-overlay" id="countdown-overlay" hidden>
             <span>곧 시작합니다</span>
@@ -114,10 +134,12 @@
           </div>
         </div>
 
+        </div>
         <div class="game-controls">
           <div class="sleep-control">
-            <div class="sleep-heading"><label for="sleep-meter">졸음 게이지</label><strong id="sleep-value">100 / 100</strong></div>
+            <div class="sleep-heading"><label for="sleep-meter"><span class="sleep-symbol" aria-hidden="true">Zz</span> 졸음 게이지</label><strong id="sleep-value">100 / 100</strong></div>
             <progress id="sleep-meter" max="100" value="100"></progress>
+            <div class="sleep-scale" aria-hidden="true"><span>완전히 깸</span><span>아직 꿈나라</span></div>
             <p id="feedback" class="feedback" role="status"></p>
           </div>
           <div class="attack-buttons" id="test-buttons" role="group" aria-label="깨우기 공격"></div>

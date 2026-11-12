@@ -18,7 +18,7 @@ async function loadWindowModels() {
   const detector = await FaceDetector.createFromOptions(files, {
     baseOptions: { modelAssetPath: `${MEDIAPIPE_MODELS}/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite` },
     runningMode: "VIDEO",
-    minDetectionConfidence: 0.5,
+    minDetectionConfidence: 0.35,
   });
   try {
     const segmenter = await ImageSegmenter.createFromOptions(files, {
@@ -80,6 +80,7 @@ function createWindowCamera(canvas, showStatus, onFrame) {
   let lastDetectionAt;
   let lastFrameAt;
   let lastVideoTime;
+  let searchPosition = 0;
 
   function setStatus(next, message) {
     if (status === next) return;
@@ -103,29 +104,32 @@ function createWindowCamera(canvas, showStatus, onFrame) {
   }
 
   function findFace(detector, time) {
-    analysisContext.drawImage(video, 0, 0, analysis.width, analysis.height);
-    let face;
-    for (const detection of detector.detectForVideo(analysis, time).detections) {
-      const box = detection.boundingBox;
-      if (box && (!face || box.width * box.height > face.width * face.height)) face = box;
+    const source = { x: 0, y: 0, width: video.videoWidth, height: video.videoHeight };
+    function detect(timestamp) {
+      analysisContext.drawImage(video, source.x, source.y, source.width, source.height,
+        0, 0, analysis.width, analysis.height);
+      return detector.detectForVideo(analysis, timestamp).detections
+        .map(item => item.boundingBox).filter(Boolean)
+        .sort((a, b) => b.width * b.height - a.width * a.height)[0];
+    }
+    let face = detect(time);
+    if (!face) {
+      // 먼 얼굴은 화면 일부를 확대해 다시 찾습니다. 가운데→왼쪽→오른쪽 순서입니다.
+      source.width *= 0.55;
+      source.height *= 0.65;
+      source.x = video.videoWidth * [0.225, 0, 0.45][searchPosition++ % 3];
+      source.y = video.videoHeight * 0.1;
+      face = detect(time + 0.01);
     }
     if (!face) return;
-
-    const scaleX = video.videoWidth / analysis.width;
-    const scaleY = video.videoHeight / analysis.height;
-    const faceHeight = face.height * scaleY;
-    const ratio = crop.width / crop.height;
-    const height = Math.min(video.videoHeight, video.videoWidth / ratio,
-      Math.max(faceHeight * 2.35, video.videoHeight * 0.47));
-    const width = height * ratio;
-    const next = {
-      x: Math.max(0, Math.min(video.videoWidth - width, (face.originX + face.width / 2) * scaleX - width / 2)),
-      y: Math.max(0, Math.min(video.videoHeight - height, face.originY * scaleY - faceHeight * 0.56)),
-      width,
-      height,
-    };
-    if (!cropBounds || time - lastFaceAt > 550) cropBounds = next;
-    else for (const key of Object.keys(next)) cropBounds[key] += (next[key] - cropBounds[key]) * 0.28;
+    const scaleX = source.width / analysis.width;
+    const scaleY = source.height / analysis.height;
+    const next = getFaceShoulderCrop({
+      originX: source.x + face.originX * scaleX, originY: source.y + face.originY * scaleY,
+      width: face.width * scaleX, height: face.height * scaleY,
+    }, video.videoWidth, video.videoHeight, crop.width / crop.height);
+    if (!cropBounds || time - lastFaceAt > 1500) cropBounds = next;
+    else for (const key of Object.keys(next)) cropBounds[key] += (next[key] - cropBounds[key]) * 0.18;
     lastFaceAt = time;
   }
 
@@ -158,10 +162,10 @@ function createWindowCamera(canvas, showStatus, onFrame) {
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.save();
     context.clip(glass);
-    const pictureWidth = canvas.width * 0.63;
+    const pictureWidth = canvas.width * 0.60;
     const pictureHeight = pictureWidth * crop.height / crop.width;
     context.save();
-    context.translate(canvas.width * 0.245 + pictureWidth, canvas.height * 0.023);
+    context.translate(canvas.width * 0.35 + pictureWidth, canvas.height * 0.035);
     context.scale(-1, 1);
     context.drawImage(crop, 0, 0, pictureWidth, pictureHeight);
     context.restore();
@@ -177,9 +181,9 @@ function createWindowCamera(canvas, showStatus, onFrame) {
       lastDetectionAt = time;
       findFace(models.detector, time);
     }
-    if (!cropBounds || time - lastFaceAt > 550) {
+    if (!cropBounds || time - lastFaceAt > 1500) {
       context.clearRect(0, 0, canvas.width, canvas.height);
-      setStatus("framing", "카메라를 보고 얼굴과 어깨를 가운데 맞춰 주세요.");
+      setStatus("framing", "얼굴을 찾으면 창문에 자동으로 크게 보여 드려요.");
       return;
     }
 
@@ -253,7 +257,7 @@ function createWindowCamera(canvas, showStatus, onFrame) {
       video.srcObject = acquired;
       await video.play();
       if (id !== requestId) return;
-      analysis.width = 384;
+      analysis.width = 640;
       analysis.height = Math.max(1, Math.round(analysis.width * video.videoHeight / video.videoWidth));
       lastFaceAt = lastDetectionAt = lastFrameAt = -Infinity;
       lastVideoTime = -1;
