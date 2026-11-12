@@ -15,7 +15,7 @@
 .play-screen:focus { outline: none; }
 
 .game-room {
-  --room-image: url("game-room.webp");
+  --room-image: url("game-room-backdrop.webp");
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -25,35 +25,117 @@
   background: #d6e3f9;
   box-shadow: 0 8px 30px #31275723;
 }
-.game-room.camera-example { --room-image: url("game-room-example.webp"); }
-
-.room-art, .quake-layer { position: absolute; inset: 0; pointer-events: none; }
+.room-art, .room-window, .room-pane,
+.quake-layer, .shake-lines { position: absolute; inset: 0; pointer-events: none; }
 .room-art { background: var(--room-image) center / 100% 100% no-repeat; }
 
-/* Soft edges blend the moving areas back into the still window and floor. */
-.quake-layer { visibility: hidden; }
-.quake-bed {
-  mask-image: radial-gradient(ellipse 24% 29% at 31% 71%, #000 78%, transparent 100%), radial-gradient(ellipse 8.5% 13% at 9.8% 69.8%, #000 84%, transparent 100%);
-  mask-composite: subtract;
-  --jolt: 0.85cqw;
+/* The window panes sit on a still backdrop, behind all moving furniture. */
+.room-window { display: none; }
+.camera-example .room-window { display: block; }
+.room-pane {
+  background: url("game-room-example.webp") center / 100% 100% no-repeat;
 }
-.quake-shelf { mask-image: radial-gradient(ellipse 20% 22% at 85% 57%, #000 69%, transparent 100%); --jolt: -0.65cqw; }
+.room-pane-left { clip-path: polygon(7.08% 8.25%, 49.81% 1.62%, 49.81% 44.9%, 7.08% 55.3%); }
+.room-pane-right { clip-path: polygon(50.14% 1.62%, 97.96% 8.34%, 97.96% 61.75%, 50.14% 44.95%); }
+
+/* These two outlines contain the objects themselves, including their painted edges. */
+.quake-object, .room-sleep { --room-image: url("game-room.webp"); }
+.room-sleep { clip-path: polygon(13.35% 42.8%, 15.45% 42.8%, 16.7% 47.4%, 15.46% 47.7%, 15.46% 50.45%, 13.45% 50.45%); }
+.quake-bed {
+  --jolt: 1.46cqw;
+  --tilt: 1.15deg;
+  transform-origin: 30% 86%;
+  clip-path: polygon(
+    9.46% 63.91%, 9.27% 62.10%, 9.53% 60.18%, 9.46% 58.47%, 9.72% 57.46%,
+    10.28% 56.96%, 11.23% 57.16%, 12.24% 56.55%, 12.30% 55.44%, 12.68% 54.64%,
+    13.44% 54.23%, 13.50% 53.63%, 13.82% 52.82%, 14.32% 52.32%, 15.21% 52.12%,
+    15.46% 51.21%, 16.03% 50.60%, 16.78% 50.50%, 17.41% 50.81%, 17.73% 50.40%,
+    18.30% 50.10%, 19.05% 50.10%, 19.62% 50.50%, 20.00% 51.21%, 20.00% 51.71%,
+    20.37% 51.91%, 20.42% 52.42%, 21.39% 52.42%, 21.77% 52.62%, 21.96% 52.92%, 22.59% 53.23%,
+    23.28% 52.92%, 25.99% 52.02%, 27.63% 51.51%, 28.01% 51.11%, 28.52% 51.21%,
+    28.90% 51.61%, 29.15% 52.52%, 29.15% 53.73%, 29.65% 55.04%, 30.79% 55.65%,
+    31.67% 55.54%, 33.38% 55.75%, 35.08% 56.25%, 36.97% 57.46%, 38.36% 58.47%,
+    40.00% 59.58%, 41.51% 60.89%, 42.97% 62.90%, 43.72% 64.11%, 45.05% 65.93%,
+    46.44% 68.15%, 47.57% 70.56%, 49.02% 71.57%, 49.53% 72.28%, 49.53% 77.12%,
+    49.40% 78.43%, 47.19% 80.04%, 42.90% 82.86%, 38.55% 85.58%, 35.14% 88.10%,
+    32.62% 89.92%, 31.17% 91.13%, 30.22% 91.33%, 28.20% 90.63%, 24.48% 88.51%,
+    20.88% 86.59%, 17.54% 84.78%, 15.14% 83.37%, 15.08% 75.60%, 15.52% 72.98%,
+    15.33% 72.08%, 14.64% 71.57%, 14.64% 65.32%, 14.13% 64.52%, 13.50% 64.11%,
+    11.86% 64.31%, 9.46% 65.12%
+  );
+}
+.quake-shelf {
+  --jolt: -1.25cqw;
+  --tilt: -1.35deg;
+  transform-origin: 85% 66%;
+  clip-path: polygon(
+    71.61% 63.10%, 71.55% 58.97%, 71.86% 58.47%, 72.62% 58.27%, 72.68% 56.96%,
+    72.05% 56.85%, 71.80% 56.45%, 71.86% 55.04%, 72.30% 52.82%, 72.49% 50.91%,
+    72.87% 49.60%, 73.44% 48.79%, 73.69% 46.17%, 74.01% 44.96%, 74.51% 44.46%,
+    75.02% 44.56%, 75.33% 44.96%, 81.20% 45.56%, 81.64% 45.36%, 82.08% 45.46%,
+    82.46% 45.97%, 82.65% 46.88%, 82.65% 48.29%, 83.22% 51.21%, 83.60% 51.01%,
+    83.53% 45.77%, 83.79% 45.26%, 85.87% 44.56%, 88.58% 44.86%, 90.35% 45.26%,
+    90.66% 45.67%, 90.60% 51.01%, 91.10% 51.41%, 91.17% 53.43%, 91.42% 53.43%,
+    91.80% 51.41%, 92.30% 50.60%, 93.19% 50.00%, 94.89% 50.10%, 96.09% 50.71%,
+    96.59% 51.51%, 96.85% 52.62%, 96.78% 56.35%, 96.47% 59.38%, 96.91% 59.48%,
+    97.22% 60.38%, 97.22% 61.29%, 97.67% 62.00%, 98.11% 63.81%, 98.30% 67.14%,
+    98.30% 69.25%, 97.98% 70.16%, 97.10% 70.77%, 95.84% 71.07%, 94.89% 70.77%,
+    94.32% 70.36%, 94.26% 69.05%, 93.00% 69.25%, 92.93% 70.36%, 92.62% 71.07%,
+    91.99% 71.17%, 91.55% 70.46%, 91.61% 69.66%, 91.92% 68.65%, 91.48% 68.25%,
+    90.60% 68.55%, 90.28% 69.25%, 89.78% 69.76%, 89.27% 69.76%, 88.90% 69.15%,
+    88.96% 68.25%, 89.15% 67.94%, 88.83% 68.55%, 88.39% 68.95%, 83.15% 67.04%,
+    83.03% 66.23%, 82.15% 65.83%, 82.08% 67.04%, 81.39% 67.14%, 81.01% 66.63%,
+    81.01% 66.33%, 79.43% 66.63%, 77.48% 65.73%, 77.48% 64.92%, 76.53% 65.42%,
+    75.02% 64.92%, 74.01% 64.42%, 73.82% 64.01%, 73.25% 63.91%
+  );
+}
+
+/* Floor-level shake patches never intersect the window. */
+.quake-layer { visibility: hidden; }
 .quake-table {
   mask-image: radial-gradient(ellipse 14% 18% at 72% 83%, #000 69%, transparent 100%), radial-gradient(ellipse 9% 13% at 94% 85%, #000 65%, transparent 100%);
-  --jolt: 0.45cqw;
+  --jolt: 0.7cqw;
 }
-.quake-floor { mask-image: radial-gradient(ellipse 10% 13% at 56% 79%, #000 64%, transparent 100%); --jolt: -0.5cqw; }
+.quake-floor { mask-image: radial-gradient(ellipse 10% 13% at 56% 79%, #000 64%, transparent 100%); --jolt: -0.68cqw; }
 .is-shaking .quake-layer { visibility: visible; }
-.is-shaking .quake-layer .room-art { animation: room-jolt 560ms ease-out both; }
+.is-shaking .quake-object, .is-shaking .quake-layer .room-art { animation: room-jolt 600ms ease-out both; }
 
 @keyframes room-jolt {
   0%, 100% { transform: translate(0); }
-  13% { transform: translate(var(--jolt), -0.33cqw); }
-  29% { transform: translate(calc(-1 * var(--jolt)), 0.14cqw); }
-  45% { transform: translate(calc(0.78 * var(--jolt)), -0.17cqw); }
-  60% { transform: translate(calc(-0.58 * var(--jolt)), 0.1cqw); }
-  74% { transform: translateX(calc(0.38 * var(--jolt))); }
-  86% { transform: translateX(calc(-0.19 * var(--jolt))); }
+  12% { transform: translate(var(--jolt), -0.55cqw) rotate(var(--tilt, 0deg)); }
+  25% { transform: translate(calc(-1 * var(--jolt)), 0.25cqw) rotate(calc(-1 * var(--tilt, 0deg))); }
+  38% { transform: translate(calc(0.85 * var(--jolt)), -0.34cqw) rotate(calc(0.75 * var(--tilt, 0deg))); }
+  51% { transform: translate(calc(-0.64 * var(--jolt)), 0.2cqw) rotate(calc(-0.55 * var(--tilt, 0deg))); }
+  65% { transform: translateX(calc(0.47 * var(--jolt))); }
+  79% { transform: translateX(calc(-0.31 * var(--jolt))); }
+  90% { transform: translateX(calc(0.15 * var(--jolt))); }
+}
+
+.shake-lines span {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: 2.7cqw;
+  height: 3.1cqw;
+  color: #364795;
+  opacity: 0;
+  transform: rotate(var(--angle));
+  filter: drop-shadow(0 0 0.12cqw #fff7e9);
+}
+.shake-lines span::before, .shake-lines span::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-left: max(1px, 0.26cqw) solid;
+  border-radius: 50%;
+}
+.shake-lines span::after { inset: 0.5cqw 0 0.45cqw 0.68cqw; }
+.is-shaking .shake-lines span { animation: shake-ink 600ms ease-out both; }
+
+@keyframes shake-ink {
+  0%, 100% { opacity: 0; }
+  12%, 56% { opacity: 0.95; }
+  38% { opacity: 0.72; }
 }
 
 .room-clock {
@@ -141,5 +223,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .is-shaking .quake-layer .room-art { animation: none; }
+  .is-shaking .quake-object, .is-shaking .quake-layer .room-art { animation: none; }
+  .is-shaking .shake-lines span { animation: none; opacity: 0.85; }
 }

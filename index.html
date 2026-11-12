@@ -57,11 +57,23 @@
 
       <section class="play-screen" id="play-screen" aria-label="게임 화면" tabindex="-1" hidden>
         <div class="game-room" id="game-room" role="group" aria-label="아침의 자취방과 이불 속에 잠든 캐릭터">
-          <div class="room-art" aria-hidden="true"></div>
-          <div class="quake-layer quake-bed" aria-hidden="true"><div class="room-art"></div></div>
-          <div class="quake-layer quake-shelf" aria-hidden="true"><div class="room-art"></div></div>
+          <div class="room-art room-backdrop" aria-hidden="true"></div>
+          <div class="room-window" aria-hidden="true">
+            <div class="room-pane room-pane-left"></div>
+            <div class="room-pane room-pane-right"></div>
+          </div>
+          <div class="room-art room-sleep" aria-hidden="true"></div>
           <div class="quake-layer quake-table" aria-hidden="true"><div class="room-art"></div></div>
           <div class="quake-layer quake-floor" aria-hidden="true"><div class="room-art"></div></div>
+          <div class="room-art quake-object quake-bed" aria-hidden="true"></div>
+          <div class="room-art quake-object quake-shelf" aria-hidden="true"></div>
+          <div class="shake-lines" aria-hidden="true">
+            <span style="--x: 28.8%; --y: 48.3%; --angle: 126deg"></span>
+            <span style="--x: 50.3%; --y: 73%; --angle: 193deg"></span>
+            <span style="--x: 70.2%; --y: 47%; --angle: 12deg"></span>
+            <span style="--x: 89.7%; --y: 40.5%; --angle: 147deg"></span>
+            <span style="--x: 81%; --y: 79%; --angle: 195deg"></span>
+          </div>
           <div class="room-clock" aria-label="게임 속 시각"><time id="game-clock" datetime="07:00">07:00</time></div>
           <span class="camera-example-label" id="camera-preview" hidden>웹캠 합성 예시</span>
           <div class="scene-overlay" id="countdown-overlay" hidden>
