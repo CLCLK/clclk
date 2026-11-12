@@ -135,23 +135,28 @@ function clearAttack() {
   clearTimeout(attackTimer);
   activeButton?.classList.remove("is-active");
   activeButton = null;
-  gameRoom.classList.remove("is-shaking");
+  gameRoom.classList.remove("is-shaking", "is-tickled");
 }
 
 function showAttack(gestureId) {
   clearAttack();
   activeButton = attackButtons.get(gestureId);
   activeButton.classList.add("is-active");
+  let duration = 640;
   if (gestureId === "shake") {
     // 같은 버튼을 빠르게 다시 눌러도 흔들림을 처음부터 재생합니다.
     void gameRoom.offsetWidth;
     gameRoom.classList.add("is-shaking");
     playShakeSound();
+  } else if (gestureId === "tickle") {
+    void gameRoom.offsetWidth;
+    gameRoom.classList.add("is-tickled");
+    duration = 1200;
   }
   attackTimer = setTimeout(() => {
     clearAttack();
     if (phase === "finishing") finishRound(true);
-  }, 640);
+  }, duration);
 }
 
 function playShakeSound() {

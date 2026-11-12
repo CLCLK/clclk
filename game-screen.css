@@ -41,6 +41,20 @@
 /* These two outlines contain the objects themselves, including their painted edges. */
 .quake-object, .room-sleep { --room-image: url("game-room.webp"); }
 .room-sleep { clip-path: polygon(13.35% 42.8%, 15.45% 42.8%, 16.7% 47.4%, 15.46% 47.7%, 15.46% 50.45%, 13.45% 50.45%); }
+
+.tickle-face {
+  --room-image: url("game-room-tickle.webp");
+  mask-image: radial-gradient(ellipse 5.65% 6.8% at 18.62% 59.2%, #000 76%, transparent 100%);
+  opacity: 0;
+}
+.is-tickled .tickle-face { animation: tickle-grin 1150ms ease-in-out both; }
+
+@keyframes tickle-grin {
+  0%, 100% { opacity: 0; transform: translateY(0); }
+  12%, 42%, 68% { opacity: 1; transform: translateY(-0.1cqw); }
+  28%, 56%, 84% { opacity: 1; transform: translateY(0); }
+}
+
 .quake-bed {
   --jolt: 1.46cqw;
   --tilt: 1.15deg;
@@ -225,4 +239,5 @@
 @media (prefers-reduced-motion: reduce) {
   .is-shaking .quake-object, .is-shaking .quake-layer .room-art { animation: none; }
   .is-shaking .shake-lines span { animation: none; opacity: 0.85; }
+  .is-tickled .tickle-face { animation: none; opacity: 1; }
 }
