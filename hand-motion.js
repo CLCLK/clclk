@@ -94,8 +94,7 @@ function createHandMotion(onMotion, onError, onStatus = () => {}) {
       const progress = tickling ? tickleTracker.progress(time) : tracker.progress(time);
       let message;
       if (result.landmarks.length < 2) message = `손 ${result.landmarks.length}/2개 인식 · 양손을 카메라 안에 보여 주세요.`;
-      else if (progress.fired) message = "인식 완료! 잠깐 쉬었다가 다시 해 주세요.";
-      else if (progress.seconds > 0) message = `${tickling ? "간지럽히기" : "흔들기"} ${progress.seconds.toFixed(1)} / 2.0초 · 양손으로 계속해 주세요!`;
+      else if (progress.seconds > 0) message = `${tickling ? "간지럽히기" : "흔들기"} ${progress.seconds.toFixed(1)} / ${progress.targetSeconds.toFixed(1)}초 · 양손으로 계속해 주세요!`;
       else if (tickleHands?.every((hand) => hand.indexOut)) message = "양 검지 인식! 구부렸다 펴며 간지럽혀 주세요.";
       else if (fists) message = "양 주먹 인식! 앞으로 쿵쿵 두드려 주세요.";
       else if (tickleHands) message = "양손 인식! 두 검지를 구부렸다 펴 주세요.";

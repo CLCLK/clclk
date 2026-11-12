@@ -28,9 +28,15 @@ function play(input, duration = 6000) {
   return hits;
 }
 
-test("both index fingers must move for at least two seconds; continuous movement fires once", () => {
+function spacedHits(hits, minimum, count = 2) {
+  assert.ok(hits.length >= count, JSON.stringify(hits));
+  assert.ok(hits[0] >= minimum, JSON.stringify(hits));
+  for (let i = 1; i < hits.length; i++) assert.ok(hits[i] - hits[i - 1] >= minimum, JSON.stringify(hits));
+}
+
+test("both index fingers must move for two seconds; continuous movement automatically starts the next interval", () => {
   const hits = play(both);
-  assert.equal(hits.length, 1);
+  spacedHits(hits, 2000);
   assert.ok(hits[0] >= 2300);
   assert.deepEqual(play(() => samples("straight", "straight")), []);
   assert.deepEqual(play(() => samples("curled", "curled")), []);
@@ -40,16 +46,16 @@ test("both index fingers must move for at least two seconds; continuous movement
 });
 
 test("brief loss is tolerated, sustained loss breaks the two-second sequence", () => {
-  assert.equal(play((t) => t >= 1300 && t < 1400 ? null : both(t)).length, 1);
-  assert.equal(play((t) => t >= 1300 && t < 1750 ? null : both(t)).length, 1);
+  spacedHits(play((t) => t >= 1300 && t < 1400 ? null : both(t)), 2000);
+  spacedHits(play((t) => t >= 1300 && t < 1750 ? null : both(t)), 2000);
   assert.deepEqual(play((t) => t < 1500 || t >= 2300 && t < 3800 ? both(t) : null), []);
 });
 
-test("a pause rearms; short hand loss after success does not cause another hit", () => {
+test("a pause restarts progress; short loss cannot create rapid duplicate hits", () => {
   const hits = play((t) => t < 3500 ? both(t) : t < 5100 ? samples("straight", "straight") : both(t - 5100), 9000);
   assert.equal(hits.length, 2);
   assert.ok(hits[1] >= 7100);
-  assert.equal(play((t) => t >= 3000 && t < 3350 ? null : both(t), 7500).length, 1);
+  spacedHits(play((t) => t >= 3000 && t < 3350 ? null : both(t), 7500), 2000);
 });
 
 // Synthetic joints let us test shape rules without a camera or a model download.
@@ -97,7 +103,7 @@ test("joint geometry recognizes curling, rejects open palms, and survives hand o
 
 test("partial bends work, but small landmark jitter and stationary pointing do not", () => {
   const partial = (t, offset) => (t + offset) % 800 < 400 ? 0.18 : 0.41;
-  assert.equal(play((t) => samples(partial(t, 0), partial(t, 150))).length, 1);
+  spacedHits(play((t) => samples(partial(t, 0), partial(t, 150))), 2000);
   assert.deepEqual(play((t) => samples(0.18 + Math.sin(t) * 0.03, 0.18 + Math.cos(t) * 0.03)), []);
   const tracker = context.createTickleTracker(() => assert.fail("Static pointing"));
   tracker.observe(samples("straight", "straight"), 0);
@@ -115,14 +121,18 @@ function playShake(input, duration = 6500) {
 test("smaller punches and wrist return paths work, but one hand and static jitter do not", () => {
   const bump = (t, shift = 0) => Math.max(0, 1 - Math.abs((t + shift) % 800 - 250) / 220);
   const punches = (t) => [1 + 0.1 * bump(t), 1 + 0.1 * bump(t, 200)];
-  assert.equal(playShake(punches).length, 1);
-  assert.equal(playShake((t) => t >= 1300 && t < 1750 ? null : punches(t)).length, 1);
+  spacedHits(playShake(punches), 1000);
+  spacedHits(playShake((t) => t >= 1300 && t < 1750 ? null : punches(t)), 1000);
   assert.deepEqual(playShake((t) => [1 + 0.1 * bump(t), 1]), []);
-  assert.deepEqual(playShake((t) => t < 1800 ? punches(t) : [1, 1]), []);
+  assert.deepEqual(playShake((t) => t < 800 ? punches(t) : [1, 1]), []);
+  assert.deepEqual(playShake((t) => [1 + Math.min(t, 2000) / 10000, 1 + Math.min(t, 2000) / 10000]), []);
   assert.deepEqual(playShake((t) => [1 + Math.sin(t) * 0.01, 1 + Math.cos(t) * 0.01]), []);
-  assert.equal(playShake((t) => [0, 200].map((shift, i) => ({ size: 0.1, x: i * 0.4, y: bump(t, shift) * 0.035 }))).length, 1);
+  spacedHits(playShake((t) => [0, 200].map((shift, i) => ({ size: 0.1, x: i * 0.4, y: bump(t, shift) * 0.035 }))), 1000);
+  // 왕복 중심이 조금씩 앞으로 이동해도 원점 복귀를 기다리며 멈추지 않아야 합니다.
+  spacedHits(playShake((t) => [0, 200].map((shift, i) => ({ size: 0.1, x: i * 0.4, y: 0.000004 * t + bump(t, shift) * 0.035 }))), 1000);
   const afterPause = playShake((t) => t < 3500 ? punches(t) : t < 5100 ? [1, 1] : punches(t - 5100), 9000);
-  assert.equal(afterPause.length, 2);
+  spacedHits(afterPause, 1000);
+  assert.ok(afterPause.some((t) => t > 6100));
 });
 
 test("joint geometry accepts a fist when the gesture label is uncertain and rejects open hands", () => {
@@ -134,7 +144,7 @@ test("joint geometry accepts a fist when the gesture label is uncertain and reje
   assert.equal(context.readFistSamples(open, 16 / 9), null);
 });
 
-test("shared model routes tickle once, excludes shake during tickle, and resets for replay", async () => {
+test("shared model repeats qualified gestures, excludes shake during tickle, and resets for replay", async () => {
   let frame;
   let loads = 0;
   const hits = [];
@@ -163,16 +173,17 @@ test("shared model routes tickle once, excludes shake during tickle, and resets 
     frame = resultFor([wave(t), wave(t, 100)], pulse(t));
     motion.update(video, t, true);
   }
-  assert.deepEqual(hits, ["tickle"]);
+  assert.ok(hits.length >= 2 && hits.every((id) => id === "tickle"));
+  const tickleCount = hits.length;
   motion.reset();
   for (let t = 10000; t < 15000; t += 50) {
     frame = resultFor(["curled", "curled"], pulse(t));
     motion.update(video, t, true);
   }
-  assert.deepEqual(hits, ["tickle", "shake"]);
+  assert.ok(hits.length > tickleCount + 1 && hits.slice(tickleCount).every((id) => id === "shake"));
   assert.equal(loads, 1);
   assert.ok(statuses.some((message) => message.includes("간지럽히기") && message.includes("/ 2.0초")));
-  assert.ok(statuses.some((message) => message.includes("흔들기") && message.includes("/ 2.0초")));
+  assert.ok(statuses.some((message) => message.includes("흔들기") && message.includes("/ 1.0초")));
   frame = { landmarks: [] };
   motion.update(video, 16000, true);
   assert.ok(statuses.at(-1).includes("손 0/2개"));

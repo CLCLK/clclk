@@ -7,8 +7,6 @@ const TICKLE_CURL_CHANGE = 0.13;
 function createTickleTracker(onTickle) {
   let hands;
   let lastBothAt;
-  let lastMotionAt;
-  let fired;
 
   function clearSequence() {
     hands = [];
@@ -17,12 +15,9 @@ function createTickleTracker(onTickle) {
 
   function reset() {
     clearSequence();
-    lastMotionAt = -Infinity;
-    fired = false;
   }
 
   function observe(samples, time) {
-    if (fired && time - lastMotionAt > TICKLE_PAUSE_MS) reset();
     const lostHands = time - lastBothAt > TICKLE_HAND_GAP_MS;
     const pausedHand = hands.some((hand) => hand.startedAt !== null)
       && hands.some((hand) => time - hand.lastMoveAt > TICKLE_PAUSE_MS);
@@ -54,27 +49,27 @@ function createTickleTracker(onTickle) {
       hand.direction = direction;
       hand.anchor = hand.curl;
       hand.steps++;
-      hand.lastMoveAt = lastMotionAt = time;
+      hand.lastMoveAt = time;
       if (hand.startedAt === null) hand.startedAt = time;
       completedCycle = true;
     }
 
-    if (!fired && completedCycle && hands.every((hand) =>
+    if (completedCycle && hands.every((hand) =>
       hand.pointed && hand.startedAt !== null && time - hand.startedAt >= TICKLE_HOLD_MS && hand.steps >= 4)) {
-      fired = true;
+      for (const hand of hands) { hand.startedAt = time; hand.steps = 0; }
       onTickle();
     }
   }
 
   // 정지한 검지나 한 프레임의 오인식으로 흔들기를 막지 않습니다.
   function isActive() {
-    return fired || hands.length === 2 && hands.every((hand) => hand.pointed && hand.steps > 0);
+    return hands.length === 2 && hands.every((hand) => hand.pointed && hand.direction !== 0);
   }
 
   function progress(time) {
     const seconds = isActive() && hands.length === 2
       ? Math.min(2, Math.max(0, (time - Math.max(...hands.map((hand) => hand.startedAt ?? time))) / 1000)) : 0;
-    return { seconds, fired };
+    return { seconds, targetSeconds: 2 };
   }
 
   reset();

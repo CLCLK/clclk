@@ -33,7 +33,7 @@ const handMotion = createHandMotion((gestureId) => motionInput.emit(gestureId), 
   handModelError = true;
   if (phase === "playing" && !activeButton) feedback.textContent = "손 인식을 시작하지 못했어요. 공격 버튼으로 플레이할 수 있어요.";
 }, (message) => {
-  if (phase === "playing" && !activeButton && feedback.textContent !== message) feedback.textContent = message;
+  if (phase === "playing" && !activeButton && performance.now() >= feedbackUntil && feedback.textContent !== message) feedback.textContent = message;
 });
 
 let phase = "ready";
@@ -46,6 +46,8 @@ let soundOn = true;
 let audioContext;
 let soundVolume;
 let handModelError = false;
+let lastEffectiveGestureId = null;
+let feedbackUntil = 0;
 
 for (const gesture of gestures) {
   const icon = document.createElement("span");
@@ -102,6 +104,8 @@ function startRound() {
   clearAttack();
   handMotion.reset();
   handModelError = false;
+  lastEffectiveGestureId = null;
+  feedbackUntil = 0;
   sleep = MAX_SLEEP;
   phase = "countdown";
   roundStartsAt = performance.now() + COUNTDOWN_SECONDS * 1000;
@@ -145,7 +149,7 @@ function updateTimer() {
     setAttackButtonsEnabled(true);
     feedback.textContent = handModelError
       ? "손 인식을 시작하지 못했어요. 공격 버튼으로 플레이할 수 있어요."
-      : "양 주먹으로 두드리거나 양손 검지를 구부렸다 펴 주세요. 2초 이상!";
+      : "흔들기 1초 · 간지럽히기 2초! 서로 다른 공격을 번갈아 해 주세요.";
   }
 }
 
@@ -154,6 +158,13 @@ function applyMotion(gesture) {
   updateTimer();
   if (phase !== "playing") return;
 
+  if (gesture.id === lastEffectiveGestureId) {
+    feedback.textContent = "같은 공격은 연속으로 효과가 없어요. 다른 공격을 해 주세요!";
+    feedbackUntil = performance.now() + 1500;
+    return;
+  }
+  lastEffectiveGestureId = gesture.id;
+  feedbackUntil = 0;
   sleep = Math.max(0, sleep - SLEEP_PER_MOTION);
   showSleep();
   feedback.textContent = `${gesture.label}! 졸음 −${SLEEP_PER_MOTION}`;
@@ -179,7 +190,7 @@ function showAttack(gestureId) {
   activeButton.classList.add("is-active");
   let duration = 640;
   if (gestureId === "shake") {
-    // 같은 버튼을 빠르게 다시 눌러도 흔들림을 처음부터 재생합니다.
+    // 다른 공격에서 넘어와도 흔들림 애니메이션을 처음부터 재생합니다.
     void gameRoom.offsetWidth;
     gameRoom.classList.add("is-shaking");
     playShakeSound();
