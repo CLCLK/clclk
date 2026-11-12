@@ -25,7 +25,10 @@ const windowCamera = createWindowCamera(cameraCanvas, (state, message) => {
     byId("camera-setting-state").textContent = "OFF";
   }
 }, (video, time) => {
-  if (phase === "countdown" || phase === "playing") handMotion.update(video, time, phase === "playing");
+  if (phase === "countdown" || phase === "playing") {
+    handMotion.update(video, time, phase === "playing");
+    faceMotion.update(video, time, phase === "playing");
+  }
 });
 const countdownOverlay = byId("countdown-overlay");
 const feedback = byId("feedback");
@@ -36,8 +39,16 @@ const motionInput = createMotionInput(applyMotion);
 const handMotion = createHandMotion((gestureId) => motionInput.emit(gestureId), () => {
   handModelError = true;
   if (phase === "playing" && !activeButton) feedback.textContent = "손 인식을 시작하지 못했어요. 공격 버튼으로 플레이할 수 있어요.";
-}, (message) => {
-  if (phase === "playing" && !activeButton && performance.now() >= feedbackUntil && feedback.textContent !== message) feedback.textContent = message;
+}, (message, active = false) => {
+  handStatus = { message, active };
+  showRecognitionFeedback();
+});
+const faceMotion = createFaceMotion((gestureId) => motionInput.emit(gestureId), () => {
+  faceStatus = { message: "얼굴 인식을 시작하지 못했어요. 손 동작이나 공격 버튼을 사용해 주세요.", active: false };
+  showRecognitionFeedback();
+}, (message, active = false) => {
+  faceStatus = { message, active };
+  showRecognitionFeedback();
 });
 
 let phase = "ready";
@@ -52,6 +63,15 @@ let soundVolume;
 let handModelError = false;
 let lastEffectiveGestureId = null;
 let feedbackUntil = 0;
+let handStatus = { message: "", active: false };
+let faceStatus = { message: "", active: false };
+
+function showRecognitionFeedback() {
+  if (phase !== "playing" || activeButton || performance.now() < feedbackUntil) return;
+  const status = faceStatus.active ? faceStatus : handStatus.active ? handStatus
+    : faceStatus.message ? faceStatus : handStatus;
+  if (status.message && feedback.textContent !== status.message) feedback.textContent = status.message;
+}
 
 for (const gesture of gestures) {
   const guide = document.createElement("li");
@@ -102,6 +122,9 @@ function startRound() {
   clearInterval(timer);
   clearAttack();
   handMotion.reset();
+  faceMotion.reset();
+  handStatus = { message: "", active: false };
+  faceStatus = { message: "", active: false };
   handModelError = false;
   lastEffectiveGestureId = null;
   feedbackUntil = 0;
@@ -111,7 +134,7 @@ function startRound() {
   showTime(0);
   showSleep();
   setAttackButtonsEnabled(false);
-  feedback.textContent = "곧 시작해요. 양손이 카메라에 보이도록 준비해 주세요.";
+  feedback.textContent = "곧 시작해요. 얼굴과 양손이 카메라에 보이도록 준비해 주세요.";
   startScreen.hidden = true;
   hideResult();
   playScreen.hidden = false;
@@ -148,7 +171,7 @@ function updateTimer() {
     setAttackButtonsEnabled(true);
     feedback.textContent = handModelError
       ? "손 인식을 시작하지 못했어요. 공격 버튼으로 플레이할 수 있어요."
-      : "흔들기 1초 · 간지럽히기 2초! 서로 다른 공격을 번갈아 해 주세요.";
+      : "흔들기 1초 · 간지럽히기·소음 내기 2초! 공격을 번갈아 해 주세요.";
   }
 }
 
@@ -273,6 +296,9 @@ function returnToStart() {
   clearInterval(timer);
   clearAttack();
   handMotion.reset();
+  faceMotion.reset();
+  handStatus = { message: "", active: false };
+  faceStatus = { message: "", active: false };
   phase = "ready";
   countdownOverlay.hidden = true;
   setAttackButtonsEnabled(false);

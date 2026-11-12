@@ -99,7 +99,7 @@ function createHandMotion(onMotion, onError, onStatus = () => {}) {
       else if (fists) message = "양 주먹 인식! 앞으로 쿵쿵 두드려 주세요.";
       else if (tickleHands) message = "양손 인식! 두 검지를 구부렸다 펴 주세요.";
       else message = "양손 인식 · 주먹을 쥐거나 검지를 까딱해 주세요.";
-      onStatus(message);
+      onStatus(message, progress.seconds > 0 || result.landmarks.length === 2);
     }
   }
 
