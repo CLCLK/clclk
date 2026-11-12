@@ -21,7 +21,7 @@ const windowCamera = createWindowCamera(cameraCanvas, (state, message) => {
   gameCameraStatus.textContent = message;
   gameCameraStatus.hidden = !message || state === "live";
 }, (video, time) => {
-  if (phase === "countdown" || phase === "playing") shakeMotion.update(video, time, phase === "playing");
+  if (phase === "countdown" || phase === "playing") handMotion.update(video, time, phase === "playing");
 });
 const countdownOverlay = byId("countdown-overlay");
 const feedback = byId("feedback");
@@ -29,8 +29,8 @@ const sleepFace = byId("sleep-face");
 const roomEffects = createRoomEffects(byId("room-effects"));
 const attackButtons = new Map();
 const motionInput = createMotionInput(applyMotion);
-const shakeMotion = createShakeMotion(() => motionInput.emit("shake"), () => {
-  shakeModelError = true;
+const handMotion = createHandMotion((gestureId) => motionInput.emit(gestureId), () => {
+  handModelError = true;
   if (phase === "playing" && !activeButton) feedback.textContent = "손 인식을 시작하지 못했어요. 공격 버튼으로 플레이할 수 있어요.";
 });
 
@@ -43,7 +43,7 @@ let activeButton;
 let soundOn = true;
 let audioContext;
 let soundVolume;
-let shakeModelError = false;
+let handModelError = false;
 
 for (const gesture of gestures) {
   const icon = document.createElement("span");
@@ -98,15 +98,15 @@ function showSleep() {
 function startRound() {
   clearInterval(timer);
   clearAttack();
-  shakeMotion.reset();
-  shakeModelError = false;
+  handMotion.reset();
+  handModelError = false;
   sleep = MAX_SLEEP;
   phase = "countdown";
   roundStartsAt = performance.now() + COUNTDOWN_SECONDS * 1000;
   showTime(0);
   showSleep();
   setAttackButtonsEnabled(false);
-  feedback.textContent = "카운트다운이 끝나면 버튼을 눌러 주세요.";
+  feedback.textContent = "곧 시작해요. 양손이 카메라에 보이도록 준비해 주세요.";
   startScreen.hidden = true;
   hideResult();
   playScreen.hidden = false;
@@ -141,9 +141,9 @@ function updateTimer() {
     phase = "playing";
     countdownOverlay.hidden = true;
     setAttackButtonsEnabled(true);
-    feedback.textContent = shakeModelError
+    feedback.textContent = handModelError
       ? "손 인식을 시작하지 못했어요. 공격 버튼으로 플레이할 수 있어요."
-      : "양 주먹으로 2초 이상 두드리거나 공격 버튼을 눌러 주세요.";
+      : "양 주먹으로 두드리거나 양손 검지를 구부렸다 펴 주세요. 2초 이상!";
   }
 }
 
