@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f3e9">
+  <title>일어나 출근해야지</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="motion-input.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar">
+      <div class="wordmark"><span aria-hidden="true">☀</span> 모닝 알람</div>
+      <div class="schedule"><span aria-hidden="true">◷</span> 07:00 — 08:00</div>
+    </header>
+
+    <main class="layout">
+      <div class="panel">
+        <section id="start-screen" aria-labelledby="game-title">
+          <h1 id="game-title">일어나<br><span>출근해야지</span></h1>
+          <p class="intro">오전 8시까지 60초. 웃음과 손동작으로<br class="desktop-break"> 이불 속 캐릭터를 깨워 주세요.</p>
+
+          <div class="guide">
+            <h2>동작 안내</h2>
+            <p>테스트 버튼을 누를 때마다 졸음이 10씩 줄어요.</p>
+            <ul class="gesture-list" id="gesture-guide"></ul>
+          </div>
+
+          <label class="camera-setting" for="camera-toggle">
+            <span><strong>웹캠 화면 표시</strong><small>테스트용 자리 표시</small></span>
+            <span class="toggle-control">
+              <input type="checkbox" role="switch" id="camera-toggle">
+              <span class="switch" aria-hidden="true"></span>
+              <span id="camera-setting-state" aria-hidden="true">OFF</span>
+            </span>
+          </label>
+          <button class="primary" id="start-button" type="button">게임 시작 <span aria-hidden="true">→</span></button>
+        </section>
+
+        <section id="play-screen" aria-labelledby="play-title" hidden>
+          <h2 class="section-title" id="play-title" tabindex="-1">캐릭터를 깨워요!</h2>
+          <div class="clocks">
+            <div><span>게임 속 시각</span><strong id="game-clock">07:00</strong></div>
+            <div><span>남은 시간</span><strong><span id="time-left">60</span><small>초</small></strong></div>
+          </div>
+          <div class="sleep-heading"><label for="sleep-meter">졸음 게이지</label><strong id="sleep-value">100 / 100</strong></div>
+          <progress id="sleep-meter" max="100" value="100"></progress>
+          <p id="feedback" class="feedback" role="status"></p>
+          <div class="guide">
+            <h3>동작 테스트</h3>
+            <div class="gesture-list" id="test-buttons"></div>
+          </div>
+        </section>
+
+        <section id="result-screen" aria-labelledby="result-title" hidden>
+          <h2 class="section-title result-title" id="result-title" tabindex="-1"></h2>
+          <p class="intro" id="result-message"></p>
+          <button class="primary" id="restart-button" type="button">다시 시작 <span aria-hidden="true">↻</span></button>
+        </section>
+      </div>
+
+      <div class="scene" id="scene">
+        <img class="bedroom" src="bedroom.webp" alt="아침 햇살이 들어오는 방에서 이불을 덮고 잠든 캐릭터">
+        <span class="scene-label" id="scene-label">☀ 아침 7시, 침실</span>
+        <div class="camera-preview" id="camera-preview" hidden>웹캠 미리보기<small>테스트용 자리 표시</small></div>
+        <div class="scene-overlay" id="countdown-overlay" hidden>
+          <span>곧 시작합니다</span>
+          <strong id="countdown" role="status">3</strong>
+        </div>
+        <div class="scene-overlay result-overlay" id="result-overlay" aria-hidden="true" hidden>
+          <span id="result-icon"></span>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
