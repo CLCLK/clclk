@@ -15,6 +15,7 @@
   <link rel="preload" href="result-failure-face.webp" as="image">
   <script src="motion-input.js" defer></script>
   <script src="room-effects.js" defer></script>
+  <script src="window-camera.js" defer></script>
   <script src="script.js" defer></script>
 </head>
 <body class="on-start">
@@ -26,6 +27,7 @@
           <p class="intro">창밖에서 늦잠 자는 직장인을 깨워 주세요.<br>오전 8시까지 남은 시간은 60초!</p>
           <button class="primary" id="start-button" type="button">게임 시작 <span aria-hidden="true">→</span></button>
           <div class="start-room-art" aria-hidden="true"></div>
+          <p class="start-room-caption">침대 옆 시계가 8시가 되기 전! 직장인을 깨워주세요.</p>
         </div>
 
         <section class="start-guide" aria-labelledby="start-guide-title">
@@ -42,11 +44,15 @@
               </label>
             </div>
           </div>
+          <p class="start-camera-status" id="start-camera-status" role="status" hidden></p>
         </section>
 
         <dialog class="start-preview" id="start-preview" aria-labelledby="start-preview-title">
-          <h2 id="start-preview-title">웹캠 합성 예시</h2>
-          <img src="game-room-example.webp" alt="창문에 관람객의 얼굴과 어깨가 비치는 예시 그림" loading="lazy">
+          <h2 id="start-preview-title">웹캠 미리보기</h2>
+          <div class="start-preview-window" aria-hidden="true">
+            <div class="start-preview-room" id="start-preview-room"></div>
+          </div>
+          <p class="start-camera-status" id="preview-camera-status" role="status"></p>
           <form method="dialog"><button class="preview-button" type="submit" autofocus>닫기</button></form>
         </dialog>
       </section>
@@ -54,9 +60,8 @@
       <section class="play-screen" id="play-screen" aria-label="게임 화면" tabindex="-1" hidden>
         <div class="game-room" id="game-room" role="group" aria-label="아침의 자취방과 이불 속에 잠든 캐릭터">
           <div class="room-art room-backdrop" aria-hidden="true"></div>
-          <div class="room-window" aria-hidden="true">
-            <div class="room-pane room-pane-left"></div>
-            <div class="room-pane room-pane-right"></div>
+          <div class="room-window" id="game-window" aria-hidden="true">
+            <canvas class="window-camera" id="window-camera" width="800" height="500"></canvas>
           </div>
           <div class="room-sleep" aria-hidden="true">
             <span style="--x: 13.6%; --y: 47.3%; --angle: -17deg; --delay: 0s">Z</span>
@@ -84,7 +89,7 @@
           <div class="victory-shadow" aria-hidden="true"></div>
           <img class="victory-pose" src="result-victory.webp" alt="" aria-hidden="true">
           <div class="room-clock" aria-label="게임 속 시각"><time id="game-clock" datetime="07:00">07:00</time></div>
-          <span class="camera-example-label" id="camera-preview" hidden>웹캠 합성 예시</span>
+          <p class="game-camera-status" id="game-camera-status" role="status" hidden></p>
           <section class="round-result" id="result-screen" aria-labelledby="result-title" hidden>
             <h2 id="result-title" tabindex="-1"></h2>
             <p id="result-message"></p>

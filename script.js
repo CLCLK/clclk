@@ -10,8 +10,17 @@ const playScreen = byId("play-screen");
 const gameRoom = byId("game-room");
 const resultScreen = byId("result-screen");
 const cameraToggle = byId("camera-toggle");
-const cameraPreview = byId("camera-preview");
 const startPreview = byId("start-preview");
+const cameraCanvas = byId("window-camera");
+const startCameraStatus = byId("start-camera-status");
+const gameCameraStatus = byId("game-camera-status");
+const windowCamera = createWindowCamera(cameraCanvas, (state, message) => {
+  startCameraStatus.textContent = message;
+  startCameraStatus.hidden = !message;
+  byId("preview-camera-status").textContent = message;
+  gameCameraStatus.textContent = message;
+  gameCameraStatus.hidden = !message || state === "live";
+});
 const countdownOverlay = byId("countdown-overlay");
 const feedback = byId("feedback");
 const sleepFace = byId("sleep-face");
@@ -94,8 +103,9 @@ function startRound() {
   playScreen.hidden = false;
   document.body.classList.remove("on-start");
   document.body.classList.add("in-game");
-  cameraPreview.hidden = !cameraToggle.checked;
-  gameRoom.classList.toggle("camera-example", cameraToggle.checked);
+  byId("game-window").append(cameraCanvas);
+  if (cameraToggle.checked) windowCamera.start();
+  else windowCamera.stop();
   countdownOverlay.hidden = false;
   playScreen.focus();
   updateTimer();
@@ -218,9 +228,19 @@ function hideResult() {
 
 cameraToggle.addEventListener("change", () => {
   byId("camera-setting-state").textContent = cameraToggle.checked ? "ON" : "OFF";
+  if (cameraToggle.checked) windowCamera.start();
+  else windowCamera.stop();
 });
 byId("start-button").addEventListener("click", startRound);
-byId("preview-button").addEventListener("click", () => startPreview.showModal());
+byId("preview-button").addEventListener("click", () => {
+  byId("start-preview-room").append(cameraCanvas);
+  startPreview.showModal();
+  windowCamera.start();
+});
+startPreview.addEventListener("close", () => {
+  if (phase === "ready" && !cameraToggle.checked) windowCamera.stop();
+});
+window.addEventListener("pagehide", () => windowCamera.stop());
 byId("replay-button").addEventListener("click", startRound);
 byId("sound-button").addEventListener("click", (event) => {
   soundOn = !soundOn;
@@ -230,6 +250,7 @@ byId("sound-button").addEventListener("click", (event) => {
 });
 byId("restart-button").addEventListener("click", () => {
   phase = "ready";
+  windowCamera.stop();
   hideResult();
   playScreen.hidden = true;
   startScreen.hidden = false;

@@ -4,9 +4,9 @@
 
 ## 실행하기
 
-상위 실습 프로젝트에서 `python practice-01/preview_server.py start`를 실행한 뒤 <http://127.0.0.1:8000/wake-up-for-work/>를 엽니다. 이 게임 폴더만 따로 복제했다면 `index.html`을 브라우저에서 열어도 실행됩니다.
+상위 실습 프로젝트에서 `python practice-01/preview_server.py start`를 실행한 뒤 <http://127.0.0.1:8000/wake-up-for-work/>를 엽니다. 웹캠을 사용할 때는 이 주소를 Chrome이나 Edge에서 열고 카메라 권한을 허용합니다. MediaPipe와 모델을 처음 불러올 때 인터넷 연결이 필요합니다.
 
-1. 시작 화면에서 네 가지 동작을 확인합니다. **미리보기**는 합성 예시 그림을 보여 줍니다. 웹캠 화면 표시가 OFF면 게임에 파란 창이, ON이면 합성 예시가 나옵니다.
+1. 시작 화면에서 네 가지 동작을 확인합니다. **미리보기**를 열고 카메라에 얼굴과 어깨를 맞추면 통창에 실시간으로 보입니다. 게임에서도 보이게 하려면 **웹캠 화면 표시**를 ON으로 둡니다.
 2. **게임 시작**을 누르면 3초 뒤 협탁의 시계가 07:00부터 흐릅니다.
 3. **흔들기**, **간지럽히기**, **소음 내기**, **바람 불기**를 클릭하면 버튼이 눌린 상태로 잠시 표시되고 졸음이 10씩 줄어듭니다. 8시 전에 졸음이 0이면 성공합니다.
 4. **흔들기**를 누르면 침대와 방 소품이 흔들립니다. **SOUND**로 흔들림 소리를 켜고 끌 수 있습니다.
@@ -27,8 +27,9 @@
 | `script.js` | 카운트다운, 시계, 졸음 계산과 화면 전환 |
 | `room-effects.js` | 소음과 바람을 표현하는 그림과 움직임 |
 | `motion-input.js` | 동작 이름과 게임으로 동작을 전달하는 통로 |
+| `window-camera.js` | 카메라 연결, 얼굴·어깨 위치 맞춤, 배경 제거, 통창 합성 |
 | `game-room-backdrop.webp` | 창틀과 파란 통창이 포함된 고정 배경 |
-| `game-room.webp`, `game-room-example.webp` | 움직이는 침대·가구의 원본과 두 유리 안의 합성 예시 |
+| `game-room.webp` | 움직이는 침대·가구의 원본 |
 | `game-room-tickle.webp` | 내장 ImageGen으로 만든 간지럽히기 표정. 방 그림에서 얼굴 부분만 겹칩니다. |
 | `game-room-shallow.webp`, `game-room-near-awake.webp` | 얕은 잠과 거의 깬 표정 |
 | `result-victory.webp`, `result-empty-bed.webp`, `result-failure-face.webp` | 승리 캐릭터, 빈 침대, 패배 표정 |

@@ -24,19 +24,13 @@
   background: #d6e3f9;
   box-shadow: 0 8px 30px #31275723;
 }
-.room-art, .room-window, .room-pane, .room-sleep, .shelf-shadow,
+.room-art, .room-window, .window-camera, .room-sleep, .shelf-shadow,
 .quake-layer, .shake-lines, .room-effects { position: absolute; inset: 0; pointer-events: none; }
 .room-art { background: var(--room-image) center / 100% 100% no-repeat; }
 .room-effects { width: 100%; height: 100%; }
 
-/* The window panes sit on a still backdrop, behind all moving furniture. */
-.room-window { display: none; }
-.camera-example .room-window { display: block; }
-.room-pane {
-  background: url("game-room-example.webp") center / 100% 100% no-repeat;
-}
-.room-pane-left { clip-path: polygon(7.08% 8.25%, 49.81% 1.62%, 49.81% 44.9%, 7.08% 55.3%); }
-.room-pane-right { clip-path: polygon(50.14% 1.62%, 97.96% 8.34%, 97.96% 61.75%, 50.14% 44.95%); }
+/* The camera is painted inside the two glass panes, behind the furniture. */
+.window-camera { width: 100%; height: 100%; }
 
 .room-sleep span {
   position: absolute;
@@ -199,15 +193,17 @@
   text-shadow: 0 0 0.5cqw #ff704a60;
 }
 .room-clock time { padding-right: 0.09em; }
-.camera-example-label {
+.game-camera-status {
   position: absolute;
   top: 12px;
   right: 12px;
+  max-width: min(80%, 420px);
   padding: 5px 9px;
   border-radius: 6px;
   background: #fffcf6ed;
   font-size: 12px;
   font-weight: 700;
+  line-height: 1.5;
 }
 
 .game-controls {
