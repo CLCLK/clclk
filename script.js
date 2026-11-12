@@ -11,6 +11,7 @@ const gameRoom = byId("game-room");
 const resultScreen = byId("result-screen");
 const cameraToggle = byId("camera-toggle");
 const cameraPreview = byId("camera-preview");
+const startPreview = byId("start-preview");
 const countdownOverlay = byId("countdown-overlay");
 const resultOverlay = byId("result-overlay");
 const feedback = byId("feedback");
@@ -36,7 +37,14 @@ for (const gesture of gestures) {
   icon.textContent = gesture.icon;
 
   const guide = document.createElement("li");
-  guide.append(icon, gesture.label);
+  const illustration = document.createElement("div");
+  illustration.className = `gesture-art gesture-art-${gesture.id}`;
+  illustration.setAttribute("aria-hidden", "true");
+  const label = document.createElement("h3");
+  label.textContent = gesture.label;
+  const instruction = document.createElement("p");
+  instruction.textContent = gesture.instruction;
+  guide.append(illustration, label, instruction);
   byId("gesture-guide").append(guide);
 
   const button = document.createElement("button");
@@ -86,6 +94,7 @@ function startRound() {
   resultScreen.hidden = true;
   resultOverlay.hidden = true;
   playScreen.hidden = false;
+  document.body.classList.remove("on-start");
   document.body.classList.add("in-game");
   cameraPreview.hidden = !cameraToggle.checked;
   gameRoom.classList.toggle("camera-example", cameraToggle.checked);
@@ -213,6 +222,7 @@ cameraToggle.addEventListener("change", () => {
   byId("camera-setting-state").textContent = cameraToggle.checked ? "ON" : "OFF";
 });
 byId("start-button").addEventListener("click", startRound);
+byId("preview-button").addEventListener("click", () => startPreview.showModal());
 byId("replay-button").addEventListener("click", startRound);
 byId("sound-button").addEventListener("click", (event) => {
   soundOn = !soundOn;
@@ -227,5 +237,6 @@ byId("restart-button").addEventListener("click", () => {
   byId("scene").classList.remove("awake");
   byId("scene-label").hidden = false;
   startScreen.hidden = false;
+  document.body.classList.add("on-start");
   byId("start-button").focus();
 });

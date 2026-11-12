@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#f7f3e9">
   <title>일어나 출근해야지</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="start-screen.css">
   <link rel="stylesheet" href="game-screen.css">
   <link rel="preload" href="game-room-shallow.webp" as="image">
   <link rel="preload" href="game-room-near-awake.webp" as="image">
@@ -13,7 +14,7 @@
   <script src="room-effects.js" defer></script>
   <script src="script.js" defer></script>
 </head>
-<body>
+<body class="on-start">
   <div class="shell">
     <header class="topbar">
       <div class="wordmark"><span aria-hidden="true">☀</span> 모닝 알람</div>
@@ -21,28 +22,38 @@
     </header>
 
     <main class="layout">
-      <div class="panel">
-        <section id="start-screen" aria-labelledby="game-title">
+      <section class="start-screen" id="start-screen" aria-labelledby="game-title">
+        <div class="start-hero">
           <h1 id="game-title">일어나<br><span>출근해야지</span></h1>
-          <p class="intro">오전 8시까지 60초. 네 가지 공격으로<br class="desktop-break"> 이불 속 캐릭터를 깨워 주세요.</p>
-
-          <div class="guide">
-            <h2>동작 안내</h2>
-            <p>공격 버튼을 누를 때마다 졸음이 10씩 줄어요.</p>
-            <ul class="gesture-list" id="gesture-guide"></ul>
-          </div>
-
-          <label class="camera-setting" for="camera-toggle">
-            <span><strong>웹캠 화면 표시</strong><small>테스트용 자리 표시</small></span>
-            <span class="toggle-control">
-              <input type="checkbox" role="switch" id="camera-toggle">
-              <span class="switch" aria-hidden="true"></span>
-              <span id="camera-setting-state" aria-hidden="true">OFF</span>
-            </span>
-          </label>
+          <p class="intro">창밖에서 늦잠 자는 직장인을 깨워 주세요.<br>오전 8시까지 남은 시간은 60초!</p>
           <button class="primary" id="start-button" type="button">게임 시작 <span aria-hidden="true">→</span></button>
+          <div class="start-room-art" aria-hidden="true"></div>
+        </div>
+
+        <section class="start-guide" aria-labelledby="start-guide-title">
+          <h2 id="start-guide-title">깨우는 방법</h2>
+          <ul class="gesture-cards" id="gesture-guide"></ul>
+          <div class="start-camera">
+            <label class="start-camera-label" id="camera-toggle-label" for="camera-toggle">웹캠 화면 표시</label>
+            <div class="start-camera-controls">
+              <button class="preview-button" id="preview-button" type="button" aria-haspopup="dialog">미리보기</button>
+              <label class="toggle-control" for="camera-toggle">
+                <input type="checkbox" role="switch" id="camera-toggle" aria-labelledby="camera-toggle-label">
+                <span class="switch" aria-hidden="true"></span>
+                <span id="camera-setting-state" aria-hidden="true">OFF</span>
+              </label>
+            </div>
+          </div>
         </section>
 
+        <dialog class="start-preview" id="start-preview" aria-labelledby="start-preview-title">
+          <h2 id="start-preview-title">웹캠 합성 예시</h2>
+          <img src="game-room-example.webp" alt="창문에 관람객의 얼굴과 어깨가 비치는 예시 그림" loading="lazy">
+          <form method="dialog"><button class="preview-button" type="submit" autofocus>닫기</button></form>
+        </dialog>
+      </section>
+
+      <div class="panel">
         <section id="result-screen" aria-labelledby="result-title" hidden>
           <h2 class="section-title result-title" id="result-title" tabindex="-1"></h2>
           <p class="intro" id="result-message"></p>

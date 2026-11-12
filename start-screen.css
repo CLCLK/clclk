@@ -1,0 +1,138 @@
+.on-start {
+  background: radial-gradient(ellipse at 92% 6%, #eae5fb, transparent 56%), #f8f4eb;
+}
+
+.on-start .shell {
+  display: grid;
+  align-items: center;
+  width: min(1520px, calc(100% - clamp(40px, 8.055vw, 116px)));
+  min-height: 100svh;
+  padding: 24px 0;
+}
+.on-start .topbar, .on-start .layout > .panel, .on-start .layout > .scene { display: none; }
+.on-start .layout { display: block; padding: 0; }
+
+.start-screen {
+  --guide-art-height: clamp(85px, 9vw, 128px);
+  display: grid;
+  grid-template-columns: minmax(0, 0.83fr) minmax(0, 1.17fr);
+  align-items: center;
+  gap: clamp(24px, 3.68vw, 53px);
+}
+.start-hero h1 {
+  font-size: clamp(48px, 5.84vw, 84px);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -0.105em;
+  word-break: keep-all;
+}
+.start-hero h1 span { color: var(--blue); }
+.start-hero .intro { margin-top: 23px; color: #4e5672; font-size: clamp(16px, 1.4vw, 19px); letter-spacing: -0.026em; }
+.start-hero .primary { width: min(270px, 100%); min-height: 61px; margin-top: 25px; font-size: 19px; }
+.start-hero .primary span { font-size: 27px; }
+.start-room-art {
+  height: clamp(170px, 16vw, 230px);
+  margin-top: 28px;
+  border: 1px solid #c9c1e5;
+  border-radius: 18px;
+  background: url("game-room.webp") 6% 72% / 191% auto no-repeat;
+  box-shadow: 0 9px 22px #38326415;
+}
+
+.start-guide h2 { margin-bottom: 17px; font-size: clamp(25px, 2.3vw, 32px); font-weight: 900; letter-spacing: -0.065em; }
+.gesture-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.gesture-cards li {
+  padding: 14px 12px 15px;
+  border: 1px solid #d9d0ed;
+  border-radius: 15px;
+  background: var(--paper);
+  text-align: center;
+}
+.gesture-cards li:nth-child(2), .gesture-cards li:nth-child(3) { background: #f8f5ff; }
+.gesture-cards h3 { margin-top: 5px; font-size: clamp(16px, 1.5vw, 20px); font-weight: 900; letter-spacing: -0.055em; }
+.gesture-cards p { margin-top: 6px; font-size: 14px; line-height: 1.45; letter-spacing: -0.04em; color: #4e5672; word-break: keep-all; }
+
+/* The three retained illustrations are cropped from the guide sheets. */
+.gesture-art {
+  width: min(100%, calc(var(--guide-art-height) * 1.31));
+  height: var(--guide-art-height);
+  margin-inline: auto;
+  background-repeat: no-repeat;
+}
+.gesture-art-shake {
+  background-image: url("guide-boxing-guard.webp");
+  background-size: auto 136%;
+  background-position: center;
+}
+.gesture-art-tickle {
+  background-image: url("guide-tickle-sheet.webp");
+  background-size: auto calc(var(--guide-art-height) * 2.90);
+  background-position: calc(50% - var(--guide-art-height) * 0.662) calc(var(--guide-art-height) * -0.361);
+}
+.gesture-art-noise, .gesture-art-wind { background-image: url("guide-mouth-sheet.webp"); }
+.gesture-art-noise {
+  background-size: auto calc(var(--guide-art-height) * 3.03);
+  background-position: calc(50% + var(--guide-art-height) * 0.689) calc(var(--guide-art-height) * -1.744);
+}
+.gesture-art-wind {
+  background-size: auto calc(var(--guide-art-height) * 3.00);
+  background-position: calc(50% - var(--guide-art-height) * 0.718) calc(var(--guide-art-height) * -1.728);
+}
+
+.start-camera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 15px;
+  padding: 15px 16px 15px 20px;
+  border: 1px solid #d3cbdc;
+  border-radius: 15px;
+  background: #fdf9f2;
+}
+.start-camera-label { font-weight: 700; letter-spacing: -0.045em; cursor: pointer; }
+.start-camera-controls { display: flex; align-items: center; gap: 16px; }
+.preview-button {
+  min-height: 36px;
+  padding: 6px 13px;
+  border: 1px solid #bdb6d5;
+  border-radius: 8px;
+  background: #f3eefb;
+  color: #303a76;
+  font-size: 14px;
+  font-weight: 700;
+}
+.preview-button:hover { background: #e9e1f8; }
+
+.start-preview {
+  width: min(720px, calc(100% - 32px));
+  max-height: calc(100% - 32px);
+  padding: 20px;
+  border: 1px solid #c9c1e5;
+  border-radius: 16px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 14px 55px #181b4850;
+}
+.start-preview::backdrop { background: #20264e85; }
+.start-preview h2 { font-size: 22px; }
+.start-preview img { display: block; width: 100%; aspect-ratio: 2.35; object-fit: cover; object-position: center top; margin: 14px 0; border-radius: 10px; }
+.start-preview form { text-align: right; }
+
+@media (max-width: 790px) {
+  .on-start .shell { width: min(550px, calc(100% - 32px)); padding: 28px 0; }
+  .start-screen { grid-template-columns: minmax(0, 1fr); gap: 30px; }
+  .start-hero h1 { font-size: clamp(43px, 11vw, 66px); }
+  .start-hero .intro { margin-top: 16px; }
+  .start-room-art { height: clamp(140px, 37vw, 210px); margin-top: 22px; }
+  .start-camera { padding: 12px; }
+  .start-camera-controls { gap: 9px; }
+}
