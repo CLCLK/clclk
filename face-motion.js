@@ -1,4 +1,4 @@
-const NOISE_HOLD_MS = 2000;
+const NOISE_HOLD_MS = 1000;
 const NOISE_GAP_MS = 350;
 
 // 거리나 고개 기울기에 덜 민감하도록 입 높이를 입 너비·눈 사이 거리와 비교합니다.
@@ -116,8 +116,8 @@ function createFaceMotion(onMotion, onError, onStatus = () => {}) {
     if (time - lastStatusAt >= 200) {
       lastStatusAt = time;
       const { active, seconds } = tracker.progress();
-      const message = active ? `소음 내기 ${seconds.toFixed(1)} / 2.0초 · 입을 크게 벌린 채 유지해 주세요!`
-        : opening ? "얼굴 인식! 입을 크게 벌려 2초 유지해 주세요. 소리는 내지 않아도 돼요."
+      const message = active ? `소음 내기 ${seconds.toFixed(1)} / ${(NOISE_HOLD_MS / 1000).toFixed(1)}초 · 입을 크게 벌린 채 유지해 주세요!`
+        : opening ? "얼굴 인식! 입을 크게 벌려 1초 유지해 주세요. 소리는 내지 않아도 돼요."
           : "얼굴을 카메라에 보여 주세요. 손 동작이나 공격 버튼도 사용할 수 있어요.";
       onStatus(message, active);
     }

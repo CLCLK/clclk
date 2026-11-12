@@ -23,35 +23,35 @@ function windResult(gap = 0.12, poses = ["open", "open"], scale = 1, aspect = 16
   return result;
 }
 
-test("wind requires two open, nearby, separately visible palms regardless of image scale or hand order", () => {
+test("wind requires two open palms without distance restrictions regardless of image scale or hand order", () => {
   for (const scale of [0.5, 1, 2]) for (const aspect of [1, 16 / 9, 9 / 16]) {
     const result = windResult(0.12, ["open", "open"], scale, aspect);
     assert.equal(context.readWindPose(result, aspect), "ready");
     for (const value of Object.values(result)) value.reverse();
     assert.equal(context.readWindPose(result, aspect), "ready");
   }
-  assert.equal(context.readWindPose(windResult(0.4), 16 / 9), "apart");
-  assert.equal(context.readWindPose(windResult(0), 16 / 9), "apart");
+  assert.equal(context.readWindPose(windResult(0.4), 16 / 9), "ready");
+  assert.equal(context.readWindPose(windResult(0), 16 / 9), "ready");
   assert.equal(context.readWindPose(windResult(0.12, ["curled", "curled"]), 16 / 9), "closed");
   assert.equal(context.readWindPose(windResult(0.12, ["straight", "straight"]), 16 / 9), "closed");
   assert.equal(context.readWindPose(windResult(0.12, ["open"]), 16 / 9), "missing");
   const edge = windResult();
   edge.landmarks.forEach((points) => points.forEach((point) => point.x *= 0.1));
-  assert.equal(context.readWindPose(edge, 16 / 9), "edge");
+  assert.equal(context.readWindPose(edge, 16 / 9), "ready");
 });
 
-test("wind needs five valid seconds, repeats at five-second intervals, and tolerates only brief gaps", () => {
-  function run(input, duration = 10500) {
+test("wind needs 1.5 valid seconds, repeats at 1.5-second intervals, and tolerates only brief gaps", () => {
+  function run(input, duration = 6500) {
     let time = 0;
     const hits = [];
     const tracker = context.createWindTracker(() => hits.push(time));
     for (; time <= duration; time += 100) tracker.observe(input(time), time);
     return hits;
   }
-  assert.deepEqual(run(() => true), [5000, 10000]);
-  assert.deepEqual(run((t) => t < 4900), []);
-  assert.equal(run((t) => t < 2000 || t >= 2300)[0], 5400);
-  assert.equal(run((t) => t < 2000 || t >= 3000)[0], 8000);
+  assert.deepEqual(run(() => true), [1500, 3000, 4500, 6000]);
+  assert.deepEqual(run((t) => t < 1400), []);
+  assert.equal(run((t) => t < 700 || t >= 1000)[0], 1900);
+  assert.equal(run((t) => t < 700 || t >= 1700)[0], 3200);
   const tracker = context.createWindTracker(() => assert.fail("Lost camera time must not count"));
   tracker.observe(true, 0); tracker.observe(true, 7000);
   assert.equal(tracker.progress().seconds, 0);
@@ -69,13 +69,13 @@ test("shared hand model routes the palm hold only to wind and resets on replay",
   motion.update(video, 0, false); await new Promise(setImmediate);
   for (let time = 100; time <= 6000; time += 100) motion.update(video, time, false);
   assert.deepEqual(hits, []);
-  for (let time = 6100; time <= 16200; time += 100) motion.update(video, time, true);
+  for (let time = 6100; time <= 9200; time += 100) motion.update(video, time, true);
   assert.deepEqual(hits, ["wind", "wind"]);
   motion.reset();
-  for (let time = 16300; time <= 21000; time += 100) motion.update(video, time, true);
+  for (let time = 9300; time <= 10600; time += 100) motion.update(video, time, true);
   assert.deepEqual(hits, ["wind", "wind"]);
   assert.equal(loads, 1);
-  assert.ok(statuses.some((message) => message.includes("바람 불기") && message.includes("/ 5.0초")));
+  assert.ok(statuses.some((message) => message.includes("바람 쏘기") && message.includes("/ 1.5초")));
 });
 const samples = (left, right) => [left, right].map((pose, id) => ({
   id, curl: typeof pose === "number" ? pose : pose === "straight" ? 0 : 0.7,

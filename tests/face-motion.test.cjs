@@ -24,20 +24,20 @@ function play(input, duration = 6500) {
 test("closed, slightly open, and brief mouth openings do not trigger", () => {
   assert.deepEqual(play(() => closed), []);
   assert.deepEqual(play(() => ({ mouthRatio: 0.25, faceRatio: 0.08 })), []);
-  assert.deepEqual(play((t) => t < 1800 ? wide : closed), []);
+  assert.deepEqual(play((t) => t < 800 ? wide : closed), []);
   assert.deepEqual(play(() => null), []);
 });
 
-test("two seconds triggers once per interval and automatically recognizes again", () => {
-  assert.deepEqual(play(() => wide), [2000, 4000, 6000]);
-  assert.deepEqual(play((t) => t < 2200 ? wide : closed), [2000]);
-  assert.deepEqual(play((t) => t < 200 ? wide : { mouthRatio: 0.3, faceRatio: 0.1 }), [2000, 4000, 6000]);
+test("one second triggers once per interval and automatically recognizes again", () => {
+  assert.deepEqual(play(() => wide), [1000, 2000, 3000, 4000, 5000, 6000]);
+  assert.deepEqual(play((t) => t < 1200 ? wide : closed), [1000]);
+  assert.deepEqual(play((t) => t < 200 ? wide : { mouthRatio: 0.3, faceRatio: 0.1 }), [1000, 2000, 3000, 4000, 5000, 6000]);
 });
 
 test("brief gaps retain progress without credit; long gaps and tab suspension reset", () => {
   const hits = play((t) => t >= 800 && t < 1000 ? null : wide);
-  assert.equal(hits[0], 2300);
-  assert.deepEqual(play((t) => t < 1500 || t >= 2000 && t < 3500 ? wide : null), []);
+  assert.equal(hits[0], 1300);
+  assert.deepEqual(play((t) => t < 800 || t >= 2000 && t < 2800 ? wide : null), []);
   const tracker = context.createNoiseTracker(() => assert.fail("A suspended tab must not complete an attack"));
   tracker.observe(wide, 0);
   tracker.observe(wide, 5000);
@@ -84,14 +84,14 @@ test("one face model is reused and only gameplay scores; replay resets progress"
   await new Promise(setImmediate);
   for (let time = 100; time < 3000; time += 50) face.update(video, time, false);
   assert.equal(reads, 0);
-  for (let time = 3000; time <= 5200; time += 50) face.update(video, time, true);
+  for (let time = 3000; time <= 4200; time += 50) face.update(video, time, true);
   assert.deepEqual(hits, ["noise"]);
-  assert.ok(reads <= 23);
+  assert.ok(reads <= 13);
   face.reset();
-  for (let time = 5300; time < 7200; time += 100) face.update(video, time, true);
+  for (let time = 4300; time < 5200; time += 100) face.update(video, time, true);
   assert.deepEqual(hits, ["noise"]);
   assert.equal(loads, 1);
-  assert.ok(statuses.some((message) => message.includes("소음 내기") && message.includes("2.0초")));
+  assert.ok(statuses.some((message) => message.includes("소음 내기") && message.includes("1.0초")));
 });
 
 test("model failure reports once and permits a retry on a new round", async () => {

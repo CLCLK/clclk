@@ -1,4 +1,4 @@
-const ROUND_SECONDS = 60;
+const ROUND_SECONDS = 40;
 const COUNTDOWN_SECONDS = 3;
 const MAX_SLEEP = 100;
 const SLEEP_PER_MOTION = 10;
@@ -32,6 +32,7 @@ const windowCamera = createWindowCamera(cameraCanvas, (state, message) => {
 });
 const countdownOverlay = byId("countdown-overlay");
 const feedback = byId("feedback");
+const repeatPopup = byId("repeat-popup");
 const sleepFace = byId("sleep-face");
 const roomEffects = createRoomEffects(byId("room-effects"));
 const attackButtons = new Map();
@@ -56,18 +57,18 @@ let sleep = MAX_SLEEP;
 let roundStartsAt = 0;
 let timer;
 let attackTimer;
+let repeatPopupTimer;
 let activeButton;
 let soundOn = true;
 let audioContext;
 let soundVolume;
 let handModelError = false;
 let lastEffectiveGestureId = null;
-let feedbackUntil = 0;
 let handStatus = { message: "", active: false };
 let faceStatus = { message: "", active: false };
 
 function showRecognitionFeedback() {
-  if (phase !== "playing" || activeButton || performance.now() < feedbackUntil) return;
+  if (phase !== "playing" || activeButton) return;
   const status = faceStatus.active ? faceStatus : handStatus.active ? handStatus
     : faceStatus.message ? faceStatus : handStatus;
   if (status.message && feedback.textContent !== status.message) feedback.textContent = status.message;
@@ -87,7 +88,15 @@ for (const gesture of gestures) {
 
   const button = document.createElement("button");
   button.type = "button";
-  button.append(illustration.cloneNode(true), gesture.label);
+  const buttonLabel = document.createElement("span");
+  buttonLabel.textContent = gesture.label;
+  if (gesture.id === "wind") {
+    const description = document.createElement("small");
+    description.className = "attack-instruction";
+    description.textContent = gesture.instruction;
+    buttonLabel.append(description);
+  }
+  button.append(illustration.cloneNode(true), buttonLabel);
   button.addEventListener("click", () => motionInput.emit(gesture.id));
   byId("test-buttons").append(button);
   attackButtons.set(gesture.id, button);
@@ -98,7 +107,7 @@ function setAttackButtonsEnabled(enabled) {
 }
 
 function showTime(elapsed) {
-  const gameMinutes = START_HOUR * 60 + elapsed;
+  const gameMinutes = START_HOUR * 60 + Math.floor(elapsed / ROUND_SECONDS * 60);
   const hours = String(Math.floor(gameMinutes / 60)).padStart(2, "0");
   const minutes = String(gameMinutes % 60).padStart(2, "0");
   const clock = byId("game-clock");
@@ -120,6 +129,7 @@ function showSleep() {
 
 function startRound() {
   clearInterval(timer);
+  hideRepeatPopup();
   clearAttack();
   handMotion.reset();
   faceMotion.reset();
@@ -127,7 +137,6 @@ function startRound() {
   faceStatus = { message: "", active: false };
   handModelError = false;
   lastEffectiveGestureId = null;
-  feedbackUntil = 0;
   sleep = MAX_SLEEP;
   phase = "countdown";
   roundStartsAt = performance.now() + COUNTDOWN_SECONDS * 1000;
@@ -158,7 +167,7 @@ function updateTimer() {
     return;
   }
 
-  const elapsed = Math.min(ROUND_SECONDS, Math.floor(milliseconds / 1000));
+  const elapsed = Math.min(ROUND_SECONDS, milliseconds / 1000);
   showTime(elapsed);
   if (elapsed === ROUND_SECONDS) {
     finishRound(false);
@@ -171,7 +180,7 @@ function updateTimer() {
     setAttackButtonsEnabled(true);
     feedback.textContent = handModelError
       ? "손 인식을 시작하지 못했어요. 공격 버튼으로 플레이할 수 있어요."
-      : "흔들기 1초 · 간지럽히기·소음 2초 · 바람 5초! 번갈아 공격해 주세요.";
+      : "흔들기·소음 1초 · 간지럽히기 2초 · 바람 쏘기 1.5초!";
   }
 }
 
@@ -181,12 +190,11 @@ function applyMotion(gesture) {
   if (phase !== "playing") return;
 
   if (gesture.id === lastEffectiveGestureId) {
-    feedback.textContent = "같은 공격은 연속으로 효과가 없어요. 다른 공격을 해 주세요!";
-    feedbackUntil = performance.now() + 1500;
+    showRepeatPopup();
     return;
   }
+  hideRepeatPopup();
   lastEffectiveGestureId = gesture.id;
-  feedbackUntil = 0;
   sleep = Math.max(0, sleep - SLEEP_PER_MOTION);
   showSleep();
   feedback.textContent = `${gesture.label}! 졸음 −${SLEEP_PER_MOTION}`;
@@ -196,6 +204,18 @@ function applyMotion(gesture) {
     phase = "finishing";
     setAttackButtonsEnabled(false);
   }
+}
+
+function showRepeatPopup() {
+  // 빠르게 여러 번 눌러도 한 팝업의 노출 시간을 계속 늘리지 않습니다.
+  if (!repeatPopup.hidden) return;
+  repeatPopup.hidden = false;
+  repeatPopupTimer = setTimeout(hideRepeatPopup, 1000);
+}
+
+function hideRepeatPopup() {
+  clearTimeout(repeatPopupTimer);
+  repeatPopup.hidden = true;
 }
 
 function clearAttack() {
@@ -253,6 +273,7 @@ function playShakeSound() {
 
 function finishRound(won) {
   clearInterval(timer);
+  hideRepeatPopup();
   clearAttack();
   phase = "result";
   setAttackButtonsEnabled(false);
@@ -294,6 +315,7 @@ byId("sound-button").addEventListener("click", (event) => {
 });
 function returnToStart() {
   clearInterval(timer);
+  hideRepeatPopup();
   clearAttack();
   handMotion.reset();
   faceMotion.reset();

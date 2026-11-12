@@ -1,29 +1,14 @@
-const WIND_HOLD_MS = 5000;
+const WIND_HOLD_MS = 1500;
 const WIND_HAND_GAP_MS = 650;
 
-// 화면에서 보이는 손바닥 크기를 기준으로 거리를 비교해 카메라 거리 영향을 줄입니다.
+// 손 사이 거리나 높이, 앞으로 미는 움직임 없이 펼친 두 손만 확인합니다.
 function readWindPose(result, aspect) {
   const shapes = readHandShapes(result, aspect);
   if (!shapes) return "missing";
   const open = shapes.every((hand) => hand.curls.every((curl) => curl < 0.3)
     && (hand.curls.every((curl) => curl < 0.22)
       || hand.gestures.some(({ categoryName, score }) => categoryName === "Open_Palm" && score >= 0.4)));
-  if (!open) return "closed";
-  const distance = (a, b) => Math.hypot((a.x - b.x) * aspect, a.y - b.y);
-  const palms = result.landmarks.map((points) => {
-    const center = [0, 5, 9, 13, 17].reduce((sum, index) => ({
-      x: sum.x + points[index].x / 5, y: sum.y + points[index].y / 5,
-    }), { x: 0, y: 0 });
-    return { center, width: distance(points[5], points[17]), length: distance(points[0], points[9]) };
-  });
-  if (palms.some((palm) => palm.width < palm.length * 0.45)) return "edge";
-  const [a, b] = palms;
-  const width = (a.width + b.width) / 2;
-  const gap = distance(a.center, b.center) / width;
-  // 두 손이 각각 보여야 합니다. 겹친 한 손을 중복 검출하거나 멀리 벌린 자세는 제외합니다.
-  if (gap < 0.5 || gap > 2.1 || Math.abs(a.center.y - b.center.y) > width
-    || Math.min(a.width, b.width) / Math.max(a.width, b.width) < 0.5) return "apart";
-  return "ready";
+  return open ? "ready" : "closed";
 }
 
 function createWindTracker(onWind) {
@@ -52,5 +37,5 @@ function createWindTracker(onWind) {
   }
 
   reset();
-  return { observe, reset, progress: () => ({ active, seconds: elapsed / 1000, targetSeconds: 5 }) };
+  return { observe, reset, progress: () => ({ active, seconds: elapsed / 1000, targetSeconds: WIND_HOLD_MS / 1000 }) };
 }

@@ -103,10 +103,8 @@ function createHandMotion(onMotion, onError, onStatus = () => {}) {
       const windProgress = windTracker.progress();
       const progress = windProgress.active ? windProgress : tickling ? tickleTracker.progress(time) : tracker.progress(time);
       let message;
-      if (windProgress.active) message = `바람 불기 ${progress.seconds.toFixed(1)} / 5.0초 · 양손을 가까이, 손바닥이 보이게 유지해 주세요!`;
+      if (windProgress.active) message = `바람 쏘기 ${progress.seconds.toFixed(1)} / ${progress.targetSeconds.toFixed(1)}초 · 두 손바닥을 보여 주세요!`;
       else if (result.landmarks.length < 2) message = `손 ${result.landmarks.length}/2개 인식 · 양손이 겹치지 않게 보여 주세요.`;
-      else if (windPose === "apart") message = "펼친 양손을 가까이 모아 주세요. 손바닥이 각각 보이게 나란히!";
-      else if (windPose === "edge") message = "양손의 손바닥을 카메라 쪽으로 보여 주세요.";
       else if (progress.seconds > 0) message = `${tickling ? "간지럽히기" : "흔들기"} ${progress.seconds.toFixed(1)} / ${progress.targetSeconds.toFixed(1)}초 · 양손으로 계속해 주세요!`;
       else if (tickleHands?.every((hand) => hand.indexOut)) message = "양 검지 인식! 구부렸다 펴며 간지럽혀 주세요.";
       else if (fists) message = "양 주먹 인식! 앞으로 쿵쿵 두드려 주세요.";
