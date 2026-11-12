@@ -14,6 +14,7 @@ const cameraPreview = byId("camera-preview");
 const countdownOverlay = byId("countdown-overlay");
 const resultOverlay = byId("result-overlay");
 const feedback = byId("feedback");
+const sleepFace = byId("sleep-face");
 const roomEffects = createRoomEffects(byId("room-effects"));
 const attackButtons = new Map();
 const motionInput = createMotionInput(applyMotion);
@@ -65,6 +66,10 @@ function showTime(elapsed) {
 function showSleep() {
   byId("sleep-meter").value = sleep;
   byId("sleep-value").textContent = `${sleep} / ${MAX_SLEEP}`;
+  let expression = "deep";
+  if (sleep <= 20) expression = "near-awake";
+  else if (sleep <= 50) expression = "shallow";
+  sleepFace.dataset.expression = expression;
 }
 
 function startRound() {

@@ -7,6 +7,8 @@
   <title>일어나 출근해야지</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="game-screen.css">
+  <link rel="preload" href="game-room-shallow.webp" as="image">
+  <link rel="preload" href="game-room-near-awake.webp" as="image">
   <script src="motion-input.js" defer></script>
   <script src="room-effects.js" defer></script>
   <script src="script.js" defer></script>
@@ -71,7 +73,8 @@
           <div class="quake-layer quake-table" aria-hidden="true"><div class="room-art"></div></div>
           <div class="quake-layer quake-floor" aria-hidden="true"><div class="room-art"></div></div>
           <div class="room-art quake-object quake-bed" aria-hidden="true">
-            <div class="room-art tickle-face"></div>
+            <div class="room-art face-art sleep-face" id="sleep-face" data-expression="deep"></div>
+            <div class="room-art face-art tickle-face"></div>
           </div>
           <div class="shelf-shadow" aria-hidden="true"></div>
           <div class="room-art quake-object quake-shelf" aria-hidden="true"></div>
