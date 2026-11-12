@@ -18,13 +18,14 @@
   gap: clamp(24px, 3.68vw, 53px);
 }
 .start-hero h1 {
+  color: #cc3f46;
   font-size: clamp(48px, 5.84vw, 84px);
   font-weight: 900;
   line-height: 1.05;
   letter-spacing: -0.105em;
   word-break: keep-all;
 }
-.start-hero h1 span { color: var(--blue); }
+.start-hero h1 span { color: inherit; }
 .start-hero .intro { margin-top: 23px; color: #4e5672; font-size: clamp(16px, 1.4vw, 19px); letter-spacing: -0.026em; }
 .start-hero .primary { width: min(270px, 100%); min-height: 61px; margin-top: 25px; font-size: 19px; }
 .start-hero .primary span { font-size: 27px; }
@@ -105,6 +106,7 @@
   background: #fdf9f2;
 }
 .start-camera-label { font-weight: 700; letter-spacing: -0.045em; cursor: pointer; }
+.start-camera-help { flex-basis: 100%; margin: 0; color: #4e5672; font-size: 13px; line-height: 1.5; word-break: keep-all; }
 .start-camera-controls { display: flex; align-items: center; gap: 16px; }
 .preview-button {
   min-height: 36px;

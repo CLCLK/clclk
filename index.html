@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f7f3e9">
-  <title>일어나 출근해야지</title>
+  <title>일어나, 출근해야지</title>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="start-screen.css">
   <link rel="stylesheet" href="game-screen.css">
@@ -24,11 +24,11 @@
     <main>
       <section class="start-screen" id="start-screen" aria-labelledby="game-title">
         <div class="start-hero">
-          <h1 id="game-title">일어나<br><span>출근해야지</span></h1>
-          <p class="intro">창밖에서 늦잠 자는 직장인을 깨워 주세요.<br>오전 8시까지 남은 시간은 60초!</p>
+          <h1 id="game-title">일어나,<br><span>출근해야지</span></h1>
+          <p class="intro">달콤한 늦잠에 빠진 직장인을 깨워 주세요!<br>오전 8시까지 못 일어나면 무단 결근! 남은 시간은 60초!</p>
           <button class="primary" id="start-button" type="button">게임 시작 <span aria-hidden="true">→</span></button>
           <div class="start-room-art" aria-hidden="true"></div>
-          <p class="start-room-caption">침대 옆 시계가 8시가 되기 전! 직장인을 깨워주세요.</p>
+          <p class="start-room-caption">침대 옆 시계가 8시가 되기 전! 졸음 게이지를 100에서 0으로 만들어 주세요. 깨우기 공격을 하면 졸음 게이지가 줄어들어요.</p>
         </div>
 
         <section class="start-guide" aria-labelledby="start-guide-title">
@@ -44,6 +44,7 @@
                 <span id="camera-setting-state" aria-hidden="true">OFF</span>
               </label>
             </div>
+            <p class="start-camera-help" id="camera-help">캠을 켜면 창문 밖에 내 모습이 나타나요. 캠을 꺼도 게임을 할 수 있어요.</p>
           </div>
           <p class="start-camera-status" id="start-camera-status" role="status" hidden></p>
         </section>
