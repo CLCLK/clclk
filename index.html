@@ -6,6 +6,7 @@
   <meta name="theme-color" content="#f7f3e9">
   <title>일어나 출근해야지</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="game-screen.css">
   <script src="motion-input.js" defer></script>
   <script src="script.js" defer></script>
 </head>
@@ -20,11 +21,11 @@
       <div class="panel">
         <section id="start-screen" aria-labelledby="game-title">
           <h1 id="game-title">일어나<br><span>출근해야지</span></h1>
-          <p class="intro">오전 8시까지 60초. 웃음과 손동작으로<br class="desktop-break"> 이불 속 캐릭터를 깨워 주세요.</p>
+          <p class="intro">오전 8시까지 60초. 네 가지 공격으로<br class="desktop-break"> 이불 속 캐릭터를 깨워 주세요.</p>
 
           <div class="guide">
             <h2>동작 안내</h2>
-            <p>테스트 버튼을 누를 때마다 졸음이 10씩 줄어요.</p>
+            <p>공격 버튼을 누를 때마다 졸음이 10씩 줄어요.</p>
             <ul class="gesture-list" id="gesture-guide"></ul>
           </div>
 
@@ -39,21 +40,6 @@
           <button class="primary" id="start-button" type="button">게임 시작 <span aria-hidden="true">→</span></button>
         </section>
 
-        <section id="play-screen" aria-labelledby="play-title" hidden>
-          <h2 class="section-title" id="play-title" tabindex="-1">캐릭터를 깨워요!</h2>
-          <div class="clocks">
-            <div><span>게임 속 시각</span><strong id="game-clock">07:00</strong></div>
-            <div><span>남은 시간</span><strong><span id="time-left">60</span><small>초</small></strong></div>
-          </div>
-          <div class="sleep-heading"><label for="sleep-meter">졸음 게이지</label><strong id="sleep-value">100 / 100</strong></div>
-          <progress id="sleep-meter" max="100" value="100"></progress>
-          <p id="feedback" class="feedback" role="status"></p>
-          <div class="guide">
-            <h3>동작 테스트</h3>
-            <div class="gesture-list" id="test-buttons"></div>
-          </div>
-        </section>
-
         <section id="result-screen" aria-labelledby="result-title" hidden>
           <h2 class="section-title result-title" id="result-title" tabindex="-1"></h2>
           <p class="intro" id="result-message"></p>
@@ -64,15 +50,39 @@
       <div class="scene" id="scene">
         <img class="bedroom" src="bedroom.webp" alt="아침 햇살이 들어오는 방에서 이불을 덮고 잠든 캐릭터">
         <span class="scene-label" id="scene-label">☀ 아침 7시, 침실</span>
-        <div class="camera-preview" id="camera-preview" hidden>웹캠 미리보기<small>테스트용 자리 표시</small></div>
-        <div class="scene-overlay" id="countdown-overlay" hidden>
-          <span>곧 시작합니다</span>
-          <strong id="countdown" role="status">3</strong>
-        </div>
         <div class="scene-overlay result-overlay" id="result-overlay" aria-hidden="true" hidden>
           <span id="result-icon"></span>
         </div>
       </div>
+
+      <section class="play-screen" id="play-screen" aria-label="게임 화면" tabindex="-1" hidden>
+        <div class="game-room" id="game-room" role="group" aria-label="아침의 자취방과 이불 속에 잠든 캐릭터">
+          <div class="room-art" aria-hidden="true"></div>
+          <div class="quake-layer quake-bed" aria-hidden="true"><div class="room-art"></div></div>
+          <div class="quake-layer quake-shelf" aria-hidden="true"><div class="room-art"></div></div>
+          <div class="quake-layer quake-table" aria-hidden="true"><div class="room-art"></div></div>
+          <div class="quake-layer quake-floor" aria-hidden="true"><div class="room-art"></div></div>
+          <div class="room-clock" aria-label="게임 속 시각"><time id="game-clock" datetime="07:00">07:00</time></div>
+          <span class="camera-example-label" id="camera-preview" hidden>웹캠 합성 예시</span>
+          <div class="scene-overlay" id="countdown-overlay" hidden>
+            <span>곧 시작합니다</span>
+            <strong id="countdown" role="status">3</strong>
+          </div>
+        </div>
+
+        <div class="game-controls">
+          <div class="sleep-control">
+            <div class="sleep-heading"><label for="sleep-meter">졸음 게이지</label><strong id="sleep-value">100 / 100</strong></div>
+            <progress id="sleep-meter" max="100" value="100"></progress>
+            <p id="feedback" class="feedback" role="status"></p>
+          </div>
+          <div class="attack-buttons" id="test-buttons" role="group" aria-label="깨우기 공격"></div>
+          <div class="game-actions">
+            <button id="sound-button" type="button" aria-pressed="true" aria-label="게임 소리"><span aria-hidden="true">♫</span> SOUND <strong id="sound-state">ON</strong></button>
+            <button id="replay-button" type="button"><span aria-hidden="true">↻</span> 다시 하기</button>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 </body>
