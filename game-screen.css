@@ -5,7 +5,7 @@
 .in-game .shell {
   display: grid;
   align-items: center;
-  width: min(calc(100% - 32px), max(740px, calc((100dvh - 145px) * 1.6)));
+  width: min(calc(100% - 32px), max(700px, calc((100dvh - 210px) * 1.6)));
   min-height: 100dvh;
   padding-block: 12px;
 }
@@ -207,26 +207,32 @@
 }
 
 .game-controls {
+  container-type: inline-size;
   position: relative;
   display: grid;
-  grid-template-columns: 1.15fr 1.25fr 1fr;
+  grid-template-columns: 1.15fr 1.4fr 0.65fr;
   align-items: center;
   gap: clamp(12px, 2vw, 32px);
-  padding: 12px clamp(14px, 2vw, 29px);
+  padding: 14px clamp(14px, 2vw, 29px);
   border: 1px solid #dfd6c9;
   border-top: 2px solid #3d4a98;
   border-radius: 0 0 18px 18px;
   background: #fffcf6;
   box-shadow: 0 8px 25px #31275715;
 }
-.game-controls .sleep-heading { margin: 0; font-size: clamp(13px, 1.2vw, 17px); }
-.game-controls progress { height: 14px; }
+.game-controls .sleep-heading { margin: 0; align-items: center; font-size: clamp(17px, 1.45vw, 22px); }
+.game-controls .sleep-heading strong { color: #bb351f; font-size: clamp(21px, 1.9vw, 28px); font-weight: 900; }
+.game-controls progress { height: 34px; border: 2px solid #26345d; border-radius: 9px; background: #26345d; }
+.game-controls progress::-webkit-progress-bar { background: #26345d; }
+.game-controls progress::-webkit-progress-value { background: #f16a3c; border-radius: 5px; }
+.game-controls progress::-moz-progress-bar { background: #f16a3c; border-radius: 5px; }
 .game-controls .feedback { margin-top: 6px; min-height: 2.6em; }
 
 .attack-buttons {
+  --guide-art-height: clamp(42px, 4.5cqw, 58px);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
+  gap: 8px;
 }
 .attack-buttons button, .game-actions button {
   min-height: 42px;
@@ -238,7 +244,8 @@
   font-weight: 700;
   word-break: keep-all;
 }
-.attack-buttons button { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.attack-buttons button { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 72px; padding: 5px 7px; }
+.attack-buttons .gesture-art { width: calc(var(--guide-art-height) * 1.25); flex-shrink: 0; margin: 0; border-radius: 7px; background-color: #fffcf6; }
 .attack-buttons button:hover:enabled:not(.is-active), .game-actions button:hover { border-color: #9c93cd; background: #e9e2f8; }
 .attack-buttons button:active:enabled, .attack-buttons button.is-active {
   transform: translateY(2px);
@@ -248,7 +255,7 @@
   box-shadow: inset 0 2px 4px #151b4b58;
 }
 .attack-buttons button:disabled:not(.is-active) { opacity: 0.6; }
-.game-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.game-actions { display: grid; gap: 8px; }
 .game-actions button { padding: 4px 11px; background: #f9f6ef; }
 .game-actions strong { color: var(--blue); }
 #replay-button { background: var(--yellow); border-color: #c99d3d; }
@@ -258,8 +265,8 @@
   .in-game .shell { width: calc(100% - 20px); }
   .game-controls { grid-template-columns: 1fr; gap: 8px; padding: 10px; }
   .game-controls .feedback { min-height: 1.5em; }
-  .game-actions { justify-content: stretch; }
-  .game-actions button { flex: 1; }
+  .game-actions { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .game-actions button { padding-inline: 5px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -20,6 +20,10 @@ const windowCamera = createWindowCamera(cameraCanvas, (state, message) => {
   byId("preview-camera-status").textContent = message;
   gameCameraStatus.textContent = message;
   gameCameraStatus.hidden = !message || state === "live";
+  if (state === "error") {
+    cameraToggle.checked = false;
+    byId("camera-setting-state").textContent = "OFF";
+  }
 }, (video, time) => {
   if (phase === "countdown" || phase === "playing") handMotion.update(video, time, phase === "playing");
 });
@@ -50,11 +54,6 @@ let lastEffectiveGestureId = null;
 let feedbackUntil = 0;
 
 for (const gesture of gestures) {
-  const icon = document.createElement("span");
-  icon.className = "gesture-icon";
-  icon.setAttribute("aria-hidden", "true");
-  icon.textContent = gesture.icon;
-
   const guide = document.createElement("li");
   const illustration = document.createElement("div");
   illustration.className = `gesture-art gesture-art-${gesture.id}`;
@@ -68,7 +67,7 @@ for (const gesture of gestures) {
 
   const button = document.createElement("button");
   button.type = "button";
-  button.append(icon.cloneNode(true), gesture.label);
+  button.append(illustration.cloneNode(true), gesture.label);
   button.addEventListener("click", () => motionInput.emit(gesture.id));
   byId("test-buttons").append(button);
   attackButtons.set(gesture.id, button);
@@ -233,7 +232,6 @@ function finishRound(won) {
   clearInterval(timer);
   clearAttack();
   phase = "result";
-  if (!cameraToggle.checked) windowCamera.stop();
   setAttackButtonsEnabled(false);
   countdownOverlay.hidden = true;
   feedback.textContent = "";
@@ -252,8 +250,7 @@ function hideResult() {
 
 cameraToggle.addEventListener("change", () => {
   byId("camera-setting-state").textContent = cameraToggle.checked ? "ON" : "OFF";
-  if (cameraToggle.checked) windowCamera.start();
-  else windowCamera.stop();
+  windowCamera.start(cameraToggle.checked);
 });
 byId("start-button").addEventListener("click", startRound);
 byId("preview-button").addEventListener("click", () => {
@@ -262,7 +259,7 @@ byId("preview-button").addEventListener("click", () => {
   windowCamera.start();
 });
 startPreview.addEventListener("close", () => {
-  if (phase === "ready" && !cameraToggle.checked) windowCamera.stop();
+  if (phase === "ready") windowCamera.start(cameraToggle.checked);
 });
 window.addEventListener("pagehide", () => windowCamera.stop());
 byId("replay-button").addEventListener("click", startRound);
@@ -272,13 +269,25 @@ byId("sound-button").addEventListener("click", (event) => {
   event.currentTarget.setAttribute("aria-pressed", String(soundOn));
   byId("sound-state").textContent = soundOn ? "ON" : "OFF";
 });
-byId("restart-button").addEventListener("click", () => {
+function returnToStart() {
+  clearInterval(timer);
+  clearAttack();
+  handMotion.reset();
   phase = "ready";
-  windowCamera.stop();
+  countdownOverlay.hidden = true;
+  setAttackButtonsEnabled(false);
+  windowCamera.start(cameraToggle.checked);
   hideResult();
   playScreen.hidden = true;
   startScreen.hidden = false;
   document.body.classList.remove("in-game");
   document.body.classList.add("on-start");
   byId("start-button").focus();
-});
+}
+byId("restart-button").addEventListener("click", returnToStart);
+byId("back-button").addEventListener("click", returnToStart);
+
+// 첫 방문에는 브라우저가 권한을 묻고, 이미 허용했다면 바로 연결합니다.
+cameraToggle.checked = true;
+byId("camera-setting-state").textContent = "ON";
+windowCamera.start();

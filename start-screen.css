@@ -30,21 +30,24 @@
 .start-hero .primary { width: min(270px, 100%); min-height: 61px; margin-top: 25px; font-size: 19px; }
 .start-hero .primary span { font-size: 27px; }
 .start-room-art {
-  height: clamp(170px, 16vw, 230px);
+  height: clamp(180px, 17vw, 240px);
   margin-top: 28px;
   border: 1px solid #c9c1e5;
   border-radius: 18px;
-  background: url("game-room.webp") 6% 72% / 191% auto no-repeat;
+  background: url("game-room.webp") 0% 67% / 245% auto no-repeat;
   box-shadow: 0 9px 22px #38326415;
 }
-.start-room-caption {
-  margin-top: 11px;
+.start-rules {
+  margin: 12px 0 0;
+  padding-left: 1.5em;
   color: #4e5672;
   font-size: clamp(14px, 1.1vw, 16px);
   font-weight: 700;
   line-height: 1.6;
   word-break: keep-all;
 }
+.start-rules li + li { margin-top: 4px; }
+.start-rules li::marker { color: #cc3f46; font-weight: 900; }
 
 .start-guide h2 { margin-bottom: 17px; font-size: clamp(25px, 2.3vw, 32px); font-weight: 900; letter-spacing: -0.065em; }
 .gesture-cards {
@@ -143,7 +146,7 @@
   .start-screen { grid-template-columns: minmax(0, 1fr); gap: 30px; }
   .start-hero h1 { font-size: clamp(43px, 11vw, 66px); }
   .start-hero .intro { margin-top: 16px; }
-  .start-room-art { height: clamp(140px, 37vw, 210px); margin-top: 22px; }
+  .start-room-art { height: clamp(170px, 46vw, 235px); margin-top: 22px; }
   .start-camera { padding: 12px; }
   .start-camera-controls { gap: 9px; }
 }

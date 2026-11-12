@@ -30,24 +30,27 @@
           <p class="intro">달콤한 늦잠에 빠진 직장인을 깨워 주세요!<br>오전 8시까지 못 일어나면 무단 결근! 남은 시간은 60초!</p>
           <button class="primary" id="start-button" type="button">게임 시작 <span aria-hidden="true">→</span></button>
           <div class="start-room-art" aria-hidden="true"></div>
-          <p class="start-room-caption">침대 옆 시계가 8시가 되기 전! 졸음 게이지를 100에서 0으로 만들어 주세요. 깨우기 공격을 하면 졸음 게이지가 줄어들어요.</p>
+          <ol class="start-rules" aria-label="게임 규칙">
+            <li>시계가 8시가 되기 전! 졸음 게이지를 0으로 만들어야 해요.</li>
+            <li>깨우기 공격을 하면 졸음 게이지가 줄어들어요.</li>
+            <li>같은 공격을 연속으로 하면 게이지가 줄지 않아요.</li>
+          </ol>
         </div>
 
         <section class="start-guide" aria-labelledby="start-guide-title">
           <h2 id="start-guide-title">깨우는 방법</h2>
           <ul class="gesture-cards" id="gesture-guide"></ul>
-          <p class="start-camera-status">같은 공격은 두 번째 연속 사용부터 효과가 없어요. 다른 공격을 번갈아 해 주세요!</p>
           <div class="start-camera">
             <label class="start-camera-label" id="camera-toggle-label" for="camera-toggle">웹캠 화면 표시</label>
             <div class="start-camera-controls">
               <button class="preview-button" id="preview-button" type="button" aria-haspopup="dialog">미리보기</button>
               <label class="toggle-control" for="camera-toggle">
-                <input type="checkbox" role="switch" id="camera-toggle" aria-labelledby="camera-toggle-label">
+                <input type="checkbox" role="switch" id="camera-toggle" aria-labelledby="camera-toggle-label" checked>
                 <span class="switch" aria-hidden="true"></span>
-                <span id="camera-setting-state" aria-hidden="true">OFF</span>
+                <span id="camera-setting-state" aria-hidden="true">ON</span>
               </label>
             </div>
-            <p class="start-camera-help" id="camera-help">캠을 켜면 창문 밖에 내 모습이 나타나요. 캠을 꺼도 게임을 할 수 있어요.</p>
+            <p class="start-camera-help" id="camera-help">ON이면 창문 밖에 내 모습이 나타나요. OFF여도 웹캠 연결과 모션 인식은 유지돼요.</p>
           </div>
           <p class="start-camera-status" id="start-camera-status" role="status" hidden></p>
         </section>
@@ -116,6 +119,7 @@
           <div class="game-actions">
             <button id="sound-button" type="button" aria-pressed="true" aria-label="게임 소리"><span aria-hidden="true">♫</span> SOUND <strong id="sound-state">ON</strong></button>
             <button id="replay-button" type="button"><span aria-hidden="true">↻</span> 다시 하기</button>
+            <button id="back-button" type="button"><span aria-hidden="true">←</span> 돌아가기</button>
           </div>
         </div>
       </section>
