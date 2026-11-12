@@ -32,6 +32,8 @@ const motionInput = createMotionInput(applyMotion);
 const handMotion = createHandMotion((gestureId) => motionInput.emit(gestureId), () => {
   handModelError = true;
   if (phase === "playing" && !activeButton) feedback.textContent = "손 인식을 시작하지 못했어요. 공격 버튼으로 플레이할 수 있어요.";
+}, (message) => {
+  if (phase === "playing" && !activeButton && feedback.textContent !== message) feedback.textContent = message;
 });
 
 let phase = "ready";

@@ -13,7 +13,10 @@ function runtime(extra = {}) {
 }
 
 const context = runtime();
-const samples = (left, right) => [{ id: "Left", pose: left }, { id: "Right", pose: right }];
+const samples = (left, right) => [left, right].map((pose, id) => ({
+  id, curl: typeof pose === "number" ? pose : pose === "straight" ? 0 : 0.7,
+  indexOut: typeof pose === "number" ? pose < 0.3 : pose === "straight",
+}));
 const wave = (time, offset = 0) => (time + offset) % 600 < 300 ? "straight" : "curled";
 const both = (time) => samples(wave(time), wave(time, 100));
 
@@ -38,11 +41,12 @@ test("both index fingers must move for at least two seconds; continuous movement
 
 test("brief loss is tolerated, sustained loss breaks the two-second sequence", () => {
   assert.equal(play((t) => t >= 1300 && t < 1400 ? null : both(t)).length, 1);
-  assert.deepEqual(play((t) => t < 1500 || t >= 2000 && t < 3500 ? both(t) : null), []);
+  assert.equal(play((t) => t >= 1300 && t < 1750 ? null : both(t)).length, 1);
+  assert.deepEqual(play((t) => t < 1500 || t >= 2300 && t < 3800 ? both(t) : null), []);
 });
 
 test("a pause rearms; short hand loss after success does not cause another hit", () => {
-  const hits = play((t) => t < 3500 ? both(t) : t < 4800 ? samples("straight", "straight") : both(t - 4800), 8500);
+  const hits = play((t) => t < 3500 ? both(t) : t < 5100 ? samples("straight", "straight") : both(t - 5100), 9000);
   assert.equal(hits.length, 2);
   assert.ok(hits[1] >= 7100);
   assert.equal(play((t) => t >= 3000 && t < 3350 ? null : both(t), 7500).length, 1);
@@ -73,24 +77,68 @@ function resultFor(poses, scale = 1, shift = 0) {
 test("joint geometry recognizes curling, rejects open palms, and survives hand ordering and translation", () => {
   const result = resultFor(["straight", "curled"]);
   const read = (value) => JSON.parse(JSON.stringify(context.readTickleHands(value, 16 / 9)));
-  assert.deepEqual(read(result), samples("straight", "curled"));
+  const expected = read(result);
+  assert.ok(expected[0].curl < 0.05 && expected[0].indexOut);
+  assert.ok(expected[1].curl > 0.6 && !expected[1].indexOut);
   assert.equal(read(resultFor(["straight", "open"])), null);
   assert.equal(read(resultFor(["straight"])), null);
   const uncertain = resultFor(["straight", "curled"]);
   uncertain.handedness[1][0].score = 0.3;
-  assert.equal(read(uncertain), null);
+  assert.deepEqual(read(uncertain), expected);
+  uncertain.handedness[1][0].categoryName = "Left";
+  assert.deepEqual(read(uncertain), expected);
   for (const value of Object.values(result)) value.reverse();
-  assert.deepEqual(read(result), samples("straight", "curled"));
-  assert.deepEqual(read(resultFor(["straight", "curled"], 1.5, 0.1)), samples("straight", "curled"));
+  assert.deepEqual(read(result), expected);
+  assert.deepEqual(read(resultFor(["straight", "curled"], 1.5, 0.1)), expected);
   const noWorld = resultFor(["straight", "curled"]);
   delete noWorld.worldLandmarks;
-  assert.deepEqual(read(noWorld), samples("straight", "curled"));
+  assert.ok(read(noWorld)[0].curl < 0.05 && read(noWorld)[1].curl > 0.6);
+});
+
+test("partial bends work, but small landmark jitter and stationary pointing do not", () => {
+  const partial = (t, offset) => (t + offset) % 800 < 400 ? 0.18 : 0.41;
+  assert.equal(play((t) => samples(partial(t, 0), partial(t, 150))).length, 1);
+  assert.deepEqual(play((t) => samples(0.18 + Math.sin(t) * 0.03, 0.18 + Math.cos(t) * 0.03)), []);
+  const tracker = context.createTickleTracker(() => assert.fail("Static pointing"));
+  tracker.observe(samples("straight", "straight"), 0);
+  assert.equal(tracker.isActive(), false);
+});
+
+function playShake(input, duration = 6500) {
+  const hits = [];
+  let time = 0;
+  const tracker = context.createShakeTracker(() => hits.push(time));
+  for (; time <= duration; time += 50) tracker.observe(input(time), time);
+  return hits;
+}
+
+test("smaller punches and wrist return paths work, but one hand and static jitter do not", () => {
+  const bump = (t, shift = 0) => Math.max(0, 1 - Math.abs((t + shift) % 800 - 250) / 220);
+  const punches = (t) => [1 + 0.1 * bump(t), 1 + 0.1 * bump(t, 200)];
+  assert.equal(playShake(punches).length, 1);
+  assert.equal(playShake((t) => t >= 1300 && t < 1750 ? null : punches(t)).length, 1);
+  assert.deepEqual(playShake((t) => [1 + 0.1 * bump(t), 1]), []);
+  assert.deepEqual(playShake((t) => t < 1800 ? punches(t) : [1, 1]), []);
+  assert.deepEqual(playShake((t) => [1 + Math.sin(t) * 0.01, 1 + Math.cos(t) * 0.01]), []);
+  assert.equal(playShake((t) => [0, 200].map((shift, i) => ({ size: 0.1, x: i * 0.4, y: bump(t, shift) * 0.035 }))).length, 1);
+  const afterPause = playShake((t) => t < 3500 ? punches(t) : t < 5100 ? [1, 1] : punches(t - 5100), 9000);
+  assert.equal(afterPause.length, 2);
+});
+
+test("joint geometry accepts a fist when the gesture label is uncertain and rejects open hands", () => {
+  const result = resultFor(["curled", "curled"]);
+  result.gestures = [[], []];
+  assert.equal(context.readFistSamples(result, 16 / 9).length, 2);
+  const open = resultFor(["open", "open"]);
+  open.gestures = [[], []];
+  assert.equal(context.readFistSamples(open, 16 / 9), null);
 });
 
 test("shared model routes tickle once, excludes shake during tickle, and resets for replay", async () => {
   let frame;
   let loads = 0;
   const hits = [];
+  const statuses = [];
   const shared = runtime({
     MEDIAPIPE_MODELS: "test",
     loadVisionRuntime: async () => ({ files: {}, GestureRecognizer: {
@@ -100,7 +148,7 @@ test("shared model routes tickle once, excludes shake during tickle, and resets 
       },
     } }),
   });
-  const motion = shared.createHandMotion((id) => hits.push(id), () => assert.fail("Model failure"));
+  const motion = shared.createHandMotion((id) => hits.push(id), () => assert.fail("Model failure"), (message) => statuses.push(message));
   const video = { videoWidth: 1280, videoHeight: 720 };
   motion.update(video, 0, false);
   await new Promise(setImmediate);
@@ -123,4 +171,9 @@ test("shared model routes tickle once, excludes shake during tickle, and resets 
   }
   assert.deepEqual(hits, ["tickle", "shake"]);
   assert.equal(loads, 1);
+  assert.ok(statuses.some((message) => message.includes("간지럽히기") && message.includes("/ 2.0초")));
+  assert.ok(statuses.some((message) => message.includes("흔들기") && message.includes("/ 2.0초")));
+  frame = { landmarks: [] };
+  motion.update(video, 16000, true);
+  assert.ok(statuses.at(-1).includes("손 0/2개"));
 });
