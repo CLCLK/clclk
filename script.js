@@ -1,4 +1,4 @@
-const ROUND_SECONDS = 40;
+const ROUND_SECONDS = 30;
 const COUNTDOWN_SECONDS = 3;
 const MAX_SLEEP = 100;
 const SLEEP_PER_MOTION = 10;
