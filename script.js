@@ -171,7 +171,7 @@ function updateTimer() {
     setAttackButtonsEnabled(true);
     feedback.textContent = handModelError
       ? "손 인식을 시작하지 못했어요. 공격 버튼으로 플레이할 수 있어요."
-      : "흔들기 1초 · 간지럽히기·소음 내기 2초! 공격을 번갈아 해 주세요.";
+      : "흔들기 1초 · 간지럽히기·소음 2초 · 바람 5초! 번갈아 공격해 주세요.";
   }
 }
 

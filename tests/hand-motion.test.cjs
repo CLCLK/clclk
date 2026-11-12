@@ -6,13 +6,77 @@ const vm = require("node:vm");
 
 function runtime(extra = {}) {
   const context = vm.createContext({ console, ...extra });
-  for (const file of ["shake-motion.js", "tickle-motion.js", "hand-motion.js"]) {
+  for (const file of ["shake-motion.js", "tickle-motion.js", "wind-motion.js", "hand-motion.js"]) {
     vm.runInContext(readFileSync(join(__dirname, "..", file), "utf8"), context);
   }
   return context;
 }
 
 const context = runtime();
+
+function windResult(gap = 0.12, poses = ["open", "open"], scale = 1, aspect = 16 / 9) {
+  const result = resultFor(poses);
+  result.landmarks = result.worldLandmarks.map((points, hand) => points.map(({ x, y, z }) => ({
+    x: (0.5 + (x + hand * gap) * scale) / aspect, y: 0.4 + y * scale, z,
+  })));
+  result.gestures = poses.map(() => []);
+  return result;
+}
+
+test("wind requires two open, nearby, separately visible palms regardless of image scale or hand order", () => {
+  for (const scale of [0.5, 1, 2]) for (const aspect of [1, 16 / 9, 9 / 16]) {
+    const result = windResult(0.12, ["open", "open"], scale, aspect);
+    assert.equal(context.readWindPose(result, aspect), "ready");
+    for (const value of Object.values(result)) value.reverse();
+    assert.equal(context.readWindPose(result, aspect), "ready");
+  }
+  assert.equal(context.readWindPose(windResult(0.4), 16 / 9), "apart");
+  assert.equal(context.readWindPose(windResult(0), 16 / 9), "apart");
+  assert.equal(context.readWindPose(windResult(0.12, ["curled", "curled"]), 16 / 9), "closed");
+  assert.equal(context.readWindPose(windResult(0.12, ["straight", "straight"]), 16 / 9), "closed");
+  assert.equal(context.readWindPose(windResult(0.12, ["open"]), 16 / 9), "missing");
+  const edge = windResult();
+  edge.landmarks.forEach((points) => points.forEach((point) => point.x *= 0.1));
+  assert.equal(context.readWindPose(edge, 16 / 9), "edge");
+});
+
+test("wind needs five valid seconds, repeats at five-second intervals, and tolerates only brief gaps", () => {
+  function run(input, duration = 10500) {
+    let time = 0;
+    const hits = [];
+    const tracker = context.createWindTracker(() => hits.push(time));
+    for (; time <= duration; time += 100) tracker.observe(input(time), time);
+    return hits;
+  }
+  assert.deepEqual(run(() => true), [5000, 10000]);
+  assert.deepEqual(run((t) => t < 4900), []);
+  assert.equal(run((t) => t < 2000 || t >= 2300)[0], 5400);
+  assert.equal(run((t) => t < 2000 || t >= 3000)[0], 8000);
+  const tracker = context.createWindTracker(() => assert.fail("Lost camera time must not count"));
+  tracker.observe(true, 0); tracker.observe(true, 7000);
+  assert.equal(tracker.progress().seconds, 0);
+  tracker.reset(); assert.equal(tracker.progress().active, false);
+});
+
+test("shared hand model routes the palm hold only to wind and resets on replay", async () => {
+  const hits = [], statuses = [];
+  let loads = 0;
+  const shared = runtime({ MEDIAPIPE_MODELS: "test", loadVisionRuntime: async () => ({ files: {}, GestureRecognizer: {
+    createFromOptions: async () => { loads++; return { recognizeForVideo: () => windResult() }; },
+  } }) });
+  const motion = shared.createHandMotion((id) => hits.push(id), () => assert.fail(), (message) => statuses.push(message));
+  const video = { videoWidth: 1280, videoHeight: 720 };
+  motion.update(video, 0, false); await new Promise(setImmediate);
+  for (let time = 100; time <= 6000; time += 100) motion.update(video, time, false);
+  assert.deepEqual(hits, []);
+  for (let time = 6100; time <= 16200; time += 100) motion.update(video, time, true);
+  assert.deepEqual(hits, ["wind", "wind"]);
+  motion.reset();
+  for (let time = 16300; time <= 21000; time += 100) motion.update(video, time, true);
+  assert.deepEqual(hits, ["wind", "wind"]);
+  assert.equal(loads, 1);
+  assert.ok(statuses.some((message) => message.includes("바람 불기") && message.includes("/ 5.0초")));
+});
 const samples = (left, right) => [left, right].map((pose, id) => ({
   id, curl: typeof pose === "number" ? pose : pose === "straight" ? 0 : 0.7,
   indexOut: typeof pose === "number" ? pose < 0.3 : pose === "straight",

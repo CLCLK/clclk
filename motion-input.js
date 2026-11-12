@@ -2,7 +2,7 @@ const gestures = [
   { id: "shake", label: "흔들기", icon: "✊", instruction: "주먹을 쥐고 창문을 치듯 쿵쿵 두드리기" },
   { id: "tickle", label: "간지럽히기", icon: "☝️", instruction: "양손 검지를 까딱까딱 간지럽히기" },
   { id: "noise", label: "소음 내기", icon: "📣", instruction: "입을 크게 벌려 소리 치기 (“아아!” “일어나!”)" },
-  { id: "wind", label: "바람 불기", icon: "💨", instruction: "입술을 오므려 후~ 불기" },
+  { id: "wind", label: "바람 불기", icon: "💨", instruction: "장풍처럼 양손을 가까이 모아 앞으로! 손바닥을 보이며 5초 유지" },
 ];
 
 function createMotionInput(onMotion) {

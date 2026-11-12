@@ -31,6 +31,7 @@ function readHandShapes(result, aspect) {
 function createHandMotion(onMotion, onError, onStatus = () => {}) {
   const tracker = createShakeTracker(() => onMotion("shake"));
   const tickleTracker = createTickleTracker(() => onMotion("tickle"));
+  const windTracker = createWindTracker(() => onMotion("wind"));
   let recognizer;
   let loading = false;
   let failed = false;
@@ -41,6 +42,7 @@ function createHandMotion(onMotion, onError, onStatus = () => {}) {
     failed = true;
     tracker.reset();
     tickleTracker.reset();
+    windTracker.reset();
     console.warn("Could not recognize hand motions.", error);
     onError();
   }
@@ -85,15 +87,26 @@ function createHandMotion(onMotion, onError, onStatus = () => {}) {
     const aspect = video.videoWidth / video.videoHeight;
     const tickleHands = readTickleHands(result, aspect);
     const fists = readFistSamples(result, aspect);
-    tickleTracker.observe(tickleHands, time);
-    if (tickleTracker.isActive()) tracker.reset();
-    else tracker.observe(fists, time);
+    const windPose = readWindPose(result, aspect);
+    windTracker.observe(windPose === "ready", time);
+    if (windPose === "ready") {
+      tickleTracker.reset();
+      tracker.reset();
+    } else {
+      tickleTracker.observe(tickleHands, time);
+      if (tickleTracker.isActive()) tracker.reset();
+      else tracker.observe(fists, time);
+    }
     if (time - lastStatusAt >= 200) {
       lastStatusAt = time;
       const tickling = tickleTracker.isActive();
-      const progress = tickling ? tickleTracker.progress(time) : tracker.progress(time);
+      const windProgress = windTracker.progress();
+      const progress = windProgress.active ? windProgress : tickling ? tickleTracker.progress(time) : tracker.progress(time);
       let message;
-      if (result.landmarks.length < 2) message = `손 ${result.landmarks.length}/2개 인식 · 양손을 카메라 안에 보여 주세요.`;
+      if (windProgress.active) message = `바람 불기 ${progress.seconds.toFixed(1)} / 5.0초 · 양손을 가까이, 손바닥이 보이게 유지해 주세요!`;
+      else if (result.landmarks.length < 2) message = `손 ${result.landmarks.length}/2개 인식 · 양손이 겹치지 않게 보여 주세요.`;
+      else if (windPose === "apart") message = "펼친 양손을 가까이 모아 주세요. 손바닥이 각각 보이게 나란히!";
+      else if (windPose === "edge") message = "양손의 손바닥을 카메라 쪽으로 보여 주세요.";
       else if (progress.seconds > 0) message = `${tickling ? "간지럽히기" : "흔들기"} ${progress.seconds.toFixed(1)} / ${progress.targetSeconds.toFixed(1)}초 · 양손으로 계속해 주세요!`;
       else if (tickleHands?.every((hand) => hand.indexOut)) message = "양 검지 인식! 구부렸다 펴며 간지럽혀 주세요.";
       else if (fists) message = "양 주먹 인식! 앞으로 쿵쿵 두드려 주세요.";
@@ -106,6 +119,7 @@ function createHandMotion(onMotion, onError, onStatus = () => {}) {
   function reset() {
     tracker.reset();
     tickleTracker.reset();
+    windTracker.reset();
     lastReadAt = -Infinity;
     lastStatusAt = -Infinity;
     failed = false;

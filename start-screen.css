@@ -69,7 +69,7 @@
 .gesture-cards h3 { margin-top: 5px; font-size: clamp(16px, 1.5vw, 20px); font-weight: 900; letter-spacing: -0.055em; }
 .gesture-cards p { margin-top: 6px; font-size: 14px; line-height: 1.45; letter-spacing: -0.04em; color: #4e5672; word-break: keep-all; }
 
-/* The three retained illustrations are cropped from the guide sheets. */
+/* Each gesture illustration is shared by the guide and game buttons. */
 .gesture-art {
   width: min(100%, calc(var(--guide-art-height) * 1.31));
   height: var(--guide-art-height);
@@ -86,14 +86,15 @@
   background-size: auto calc(var(--guide-art-height) * 2.90);
   background-position: calc(50% - var(--guide-art-height) * 0.662) calc(var(--guide-art-height) * -0.361);
 }
-.gesture-art-noise, .gesture-art-wind { background-image: url("guide-mouth-sheet.webp"); }
 .gesture-art-noise {
+  background-image: url("guide-mouth-sheet.webp");
   background-size: auto calc(var(--guide-art-height) * 3.03);
   background-position: calc(50% + var(--guide-art-height) * 0.689) calc(var(--guide-art-height) * -1.744);
 }
 .gesture-art-wind {
-  background-size: auto calc(var(--guide-art-height) * 3.00);
-  background-position: calc(50% - var(--guide-art-height) * 0.718) calc(var(--guide-art-height) * -1.728);
+  background-image: url("guide-wind-palms.png");
+  background-size: auto 128%;
+  background-position: center;
 }
 
 .start-camera {
