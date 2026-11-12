@@ -14,6 +14,7 @@ const cameraPreview = byId("camera-preview");
 const countdownOverlay = byId("countdown-overlay");
 const resultOverlay = byId("result-overlay");
 const feedback = byId("feedback");
+const roomEffects = createRoomEffects(byId("room-effects"));
 const attackButtons = new Map();
 const motionInput = createMotionInput(applyMotion);
 
@@ -136,6 +137,7 @@ function clearAttack() {
   activeButton?.classList.remove("is-active");
   activeButton = null;
   gameRoom.classList.remove("is-shaking", "is-tickled");
+  roomEffects.clear();
 }
 
 function showAttack(gestureId) {
@@ -152,6 +154,9 @@ function showAttack(gestureId) {
     void gameRoom.offsetWidth;
     gameRoom.classList.add("is-tickled");
     duration = 1200;
+  } else {
+    duration = gestureId === "wind" ? 1500 : 1200;
+    roomEffects.play(gestureId, duration);
   }
   attackTimer = setTimeout(() => {
     clearAttack();

@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="game-screen.css">
   <script src="motion-input.js" defer></script>
+  <script src="room-effects.js" defer></script>
   <script src="script.js" defer></script>
 </head>
 <body>
@@ -76,6 +77,7 @@
             <span style="--x: 89.7%; --y: 40.5%; --angle: 147deg"></span>
             <span style="--x: 81%; --y: 79%; --angle: 195deg"></span>
           </div>
+          <canvas class="room-effects" id="room-effects" width="1586" height="992" aria-hidden="true"></canvas>
           <div class="room-clock" aria-label="게임 속 시각"><time id="game-clock" datetime="07:00">07:00</time></div>
           <span class="camera-example-label" id="camera-preview" hidden>웹캠 합성 예시</span>
           <div class="scene-overlay" id="countdown-overlay" hidden>

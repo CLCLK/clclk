@@ -26,8 +26,9 @@
   box-shadow: 0 8px 30px #31275723;
 }
 .room-art, .room-window, .room-pane,
-.quake-layer, .shake-lines { position: absolute; inset: 0; pointer-events: none; }
+.quake-layer, .shake-lines, .room-effects { position: absolute; inset: 0; pointer-events: none; }
 .room-art { background: var(--room-image) center / 100% 100% no-repeat; }
+.room-effects { width: 100%; height: 100%; }
 
 /* The window panes sit on a still backdrop, behind all moving furniture. */
 .room-window { display: none; }
