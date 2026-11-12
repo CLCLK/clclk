@@ -16,6 +16,7 @@
 
 .game-room {
   --room-image: url("game-room-backdrop.webp");
+  --shelf-forward: 6.2%;
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -25,7 +26,7 @@
   background: #d6e3f9;
   box-shadow: 0 8px 30px #31275723;
 }
-.room-art, .room-window, .room-pane,
+.room-art, .room-window, .room-pane, .room-sleep, .shelf-shadow,
 .quake-layer, .shake-lines, .room-effects { position: absolute; inset: 0; pointer-events: none; }
 .room-art { background: var(--room-image) center / 100% 100% no-repeat; }
 .room-effects { width: 100%; height: 100%; }
@@ -39,9 +40,23 @@
 .room-pane-left { clip-path: polygon(7.08% 8.25%, 49.81% 1.62%, 49.81% 44.9%, 7.08% 55.3%); }
 .room-pane-right { clip-path: polygon(50.14% 1.62%, 97.96% 8.34%, 97.96% 61.75%, 50.14% 44.95%); }
 
+.room-sleep span {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  color: #444bb0;
+  font: 900 1.85cqw/1 "Malgun Gothic", sans-serif;
+  transform: rotate(var(--angle));
+  animation: sleep-drift 3.2s ease-in-out var(--delay) infinite;
+}
+
+@keyframes sleep-drift {
+  0%, 100% { translate: 0 0; opacity: 0.8; }
+  50% { translate: 0.12cqw -0.34cqw; opacity: 1; }
+}
+
 /* These two outlines contain the objects themselves, including their painted edges. */
-.quake-object, .room-sleep { --room-image: url("game-room.webp"); }
-.room-sleep { clip-path: polygon(13.35% 42.8%, 15.45% 42.8%, 16.7% 47.4%, 15.46% 47.7%, 15.46% 50.45%, 13.45% 50.45%); }
+.quake-object { --room-image: url("game-room.webp"); }
 
 .tickle-face {
   --room-image: url("game-room-tickle.webp");
@@ -82,8 +97,9 @@
 .quake-shelf {
   --jolt: -1.25cqw;
   --tilt: -1.35deg;
+  translate: 0 var(--shelf-forward);
   transform-origin: 85% 66%;
-  clip-path: polygon(
+  clip-path: polygon(evenodd,
     71.61% 63.10%, 71.55% 58.97%, 71.86% 58.47%, 72.62% 58.27%, 72.68% 56.96%,
     72.05% 56.85%, 71.80% 56.45%, 71.86% 55.04%, 72.30% 52.82%, 72.49% 50.91%,
     72.87% 49.60%, 73.44% 48.79%, 73.69% 46.17%, 74.01% 44.96%, 74.51% 44.46%,
@@ -101,8 +117,16 @@
     88.96% 68.25%, 89.15% 67.94%, 88.83% 68.55%, 88.39% 68.95%, 83.15% 67.04%,
     83.03% 66.23%, 82.15% 65.83%, 82.08% 67.04%, 81.39% 67.14%, 81.01% 66.63%,
     81.01% 66.33%, 79.43% 66.63%, 77.48% 65.73%, 77.48% 64.92%, 76.53% 65.42%,
-    75.02% 64.92%, 74.01% 64.42%, 73.82% 64.01%, 73.25% 63.91%
+    75.02% 64.92%, 74.01% 64.42%, 73.82% 64.01%, 73.25% 63.91%, 71.61% 63.10%,
+    91.10% 64.62%, 92.18% 65.22%, 92.12% 66.03%, 91.61% 65.73%, 91.10% 66.03%, 91.10% 64.62%,
+    71.61% 63.10%, 93.12% 65.42%, 94.57% 64.62%, 94.45% 65.83%, 93.19% 66.43%, 93.12% 65.42%, 71.61% 63.10%
   );
+}
+.shelf-shadow {
+  background:
+    radial-gradient(ellipse 6.7% 1.35% at 77.6% calc(66.1% + var(--shelf-forward)), #78502555, transparent),
+    radial-gradient(ellipse 4.5% 1.35% at 86.8% calc(68.25% + var(--shelf-forward)), #78502555, transparent),
+    radial-gradient(ellipse 5.45% 1.4% at 93.6% calc(70.55% + var(--shelf-forward)), #78502550, transparent);
 }
 
 /* Floor-level shake patches never intersect the window. */
@@ -126,10 +150,11 @@
   90% { transform: translateX(calc(0.15 * var(--jolt))); }
 }
 
+.shake-lines .shelf-mark { --mark-offset: var(--shelf-forward); }
 .shake-lines span {
   position: absolute;
   left: var(--x);
-  top: var(--y);
+  top: calc(var(--y) + var(--mark-offset, 0%));
   width: 2.7cqw;
   height: 3.1cqw;
   color: #364795;
@@ -238,6 +263,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .room-sleep span { animation: none; }
   .is-shaking .quake-object, .is-shaking .quake-layer .room-art { animation: none; }
   .is-shaking .shake-lines span { animation: none; opacity: 0.85; }
   .is-tickled .tickle-face { animation: none; opacity: 1; }
