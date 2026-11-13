@@ -1,0 +1,45 @@
+/* All moving sprites use the same room coordinates. */
+.in-game .shell { width: min(100%, calc((100dvh - 4px) * 16 / 9)); }
+.game-room { height: 100%; --room-image: url('gouache-room.png'); --shelf-forward: 0%; }
+.room-backdrop { --room-image: url('gouache-room.png'); }
+.quake-bed, .victory-bed { inset: 45% auto auto 14%; width: 38%; height: 48%; clip-path: none; transform-origin: 50% 90%; --jolt: .65cqw; --tilt: .6deg; }
+.quake-bed { --room-image: url('gouache-bed.png'); }
+.victory-bed { --room-image: url('gouache-empty.png'); }
+.face-art { mask-image: radial-gradient(ellipse 13% 16% at 32% 28%, black 88%, transparent 100%); }
+.sleep-face[data-expression='shallow'] { --room-image: url('gouache-shallow.png'); }
+.sleep-face[data-expression='near-awake'] { --room-image: url('gouache-awake.png'); }
+.tickle-face { --room-image: url('gouache-tickle.png'); }
+.failure-face { --room-image: url('gouache-failure.png'); }
+.quake-shelf { inset: 39% auto auto 70%; width: 29%; height: 36%; clip-path: none; translate: none; --room-image: url('gouache-shelf.png'); --jolt: -.5cqw; --tilt: -.6deg; transform-origin: 50% 95%; }
+.quake-table { inset: 65% auto auto 49%; width: 36%; height: 34%; mask-image: none; visibility: visible; --room-image: url('gouache-table.png'); }
+.quake-floor, .shelf-shadow { display: none; }
+.room-clock { left: 6.5%; top: 65.2%; width: 5.8%; height: 5.3%; font-size: 1.8cqw; background: transparent; transform: skewY(-13deg); text-shadow: none; }
+.room-sleep span { margin: 0; }
+.room-sleep span:nth-child(1) { left: 24%; top: 43%; }
+.room-sleep span:nth-child(2) { left: 25.5%; top: 39.5%; }
+.room-sleep span:nth-child(3) { left: 24%; top: 36%; }
+.shake-lines span { width: 4.3cqw; height: 5cqw; color: #182caf; filter: drop-shadow(3px 0 #ffcf37) drop-shadow(-2px 0 #fff5d9); }
+.shake-lines span::before, .shake-lines span::after { border-left-width: .5cqw; }
+.shake-lines span:nth-child(1) { left: 37%; top: 53%; }
+.shake-lines span:nth-child(2) { left: 26%; top: 86%; }
+.shake-lines span:nth-child(3) { left: 69%; top: 39%; }
+.shake-lines span:nth-child(4) { left: 94%; top: 41%; }
+.shake-lines span:nth-child(5) { left: 77%; top: 80%; }
+.quake-bed::after { content: ''; position: absolute; inset: 0; opacity: 0; background: url('gouache-tickle-marks.png') center / 100% 100% no-repeat; pointer-events: none; }
+.is-tickled .quake-bed::after { animation: tickle-grin 1150ms ease-in-out both; }
+.victory-pose, .round-won .victory-pose { left: 30%; bottom: 7%; width: 26%; height: 64%; }
+.start-preview-room { background-image: url('gouache-room.png'); aspect-ratio: 2.04; }
+.attack-buttons .gesture-art { background-image: url('start-gouache.png'); background-repeat: no-repeat; background-size: 668.8% 784.17%; width: 4.4cqw; height: 2.112cqw; margin: 0; }
+.attack-buttons .gesture-art-shake { background-position: 64% 23%; }
+.attack-buttons .gesture-art-tickle { background-position: 91% 23%; }
+.attack-buttons .gesture-art-noise { background-position: 64% 54.6%; }
+.attack-buttons .gesture-art-wind { background-position: 91% 54.6%; }
+.attack-buttons button::after { display: none; }
+.game-controls progress::-webkit-progress-value { background: #f279ab; }
+.game-controls progress::-moz-progress-bar { background: #f279ab; }
+.game-controls progress { height: 2cqw; }
+.game-controls .sleep-heading strong { color: #2333a1; background: transparent; border: 0; font-size: 1.7cqw; }
+.attack-buttons button { border: 2px solid #2834a2; background: #fff5e5; box-shadow: none; }
+.attack-instruction { margin-top: .3cqw; }
+@media (max-width: 900px) { .attack-buttons .gesture-art { width: 60px; height: 28.8px; } .game-controls progress { height: 24px; } .game-controls .sleep-heading strong { font-size: 22px; } }
+@media (prefers-reduced-motion: reduce) { .is-tickled .quake-bed::after { animation: none; opacity: 1; } }

@@ -11,15 +11,19 @@
   <link rel="stylesheet" href="game-screen.css?v=20261113-analog-audio1">
   <link rel="stylesheet" href="result-scene.css?v=20261113-analog-audio1">
   <link rel="stylesheet" href="analog-ui.css?v=gouache-start-1">
+  <link rel="stylesheet" href="gouache-game.css?v=2">
   <link rel="preload" href="start-gouache.png?v=2" as="image">
-  <link rel="preload" href="game-room-shallow.webp" as="image">
-  <link rel="preload" href="game-room-near-awake.webp" as="image">
-  <link rel="preload" href="result-empty-bed.webp" as="image">
-  <link rel="preload" href="result-failure-face.webp" as="image">
-  <script src="motion-input.js?v=20261113-analog-audio1" defer></script>
-  <script src="room-effects.js?v=20261113-analog-audio1" defer></script>
+  <link rel="preload" href="gouache-room.png" as="image">
+  <link rel="preload" href="gouache-bed.png" as="image">
+  <link rel="preload" href="gouache-shallow.png" as="image">
+  <link rel="preload" href="gouache-awake.png" as="image">
+  <link rel="preload" href="gouache-tickle.png" as="image">
+  <link rel="preload" href="gouache-empty.png" as="image">
+  <link rel="preload" href="gouache-failure.png" as="image">
+  <script src="motion-input.js?v=gouache-1" defer></script>
+  <script src="room-effects.js?v=gouache-1" defer></script>
   <script src="camera-framing.js?v=20261113-analog-audio1" defer></script>
-  <script src="window-camera.js?v=20261113-analog-audio1" defer></script>
+  <script src="window-camera.js?v=gouache-1" defer></script>
   <script src="shake-motion.js?v=20261113-analog-audio1" defer></script>
   <script src="tickle-motion.js?v=20261113-analog-audio1" defer></script>
   <script src="wind-motion.js?v=20261113-analog-audio1" defer></script>
@@ -108,7 +112,7 @@
           </div>
           <canvas class="room-effects" id="room-effects" width="1586" height="992" aria-hidden="true"></canvas>
           <div class="victory-shadow" aria-hidden="true"></div>
-          <img class="victory-pose" src="result-victory.webp" alt="" aria-hidden="true">
+          <img class="victory-pose" src="gouache-victory.png" alt="" aria-hidden="true">
           <div class="room-clock" aria-label="게임 속 시각"><time id="game-clock" datetime="07:00">07:00</time></div>
           <p class="game-camera-status" id="game-camera-status" role="status" hidden></p>
           <section class="round-result" id="result-screen" aria-labelledby="result-title" hidden>

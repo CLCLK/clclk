@@ -53,8 +53,8 @@ function createWindowCamera(canvas, showStatus, onFrame) {
   // Two panes share one picture, while the painted edges and corner seam stay clear.
   const glass = new Path2D();
   for (const pane of [
-    [[0.0708, 0.0825], [0.4981, 0.0162], [0.4981, 0.449], [0.0708, 0.553]],
-    [[0.5014, 0.0162], [0.9796, 0.0834], [0.9796, 0.6175], [0.5014, 0.4495]],
+    [[0.056, 0.075], [0.494, 0.018], [0.494, 0.434], [0.056, 0.528]],
+    [[0.5, 0.018], [0.982, 0.088], [0.982, 0.582], [0.5, 0.434]],
   ]) {
     const [[x, y], ...corners] = pane;
     glass.moveTo(x * canvas.width, y * canvas.height);
