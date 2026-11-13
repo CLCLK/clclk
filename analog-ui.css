@@ -1,48 +1,32 @@
-/* 승인한 손그림 시안. 그림 위의 실제 HTML 버튼으로 키보드도 사용할 수 있습니다. */
-.start-illustration { display: none; }
+/* 시안의 비율과 그림 속 버튼 위치에 실제 조작 영역을 맞춥니다. */
 .on-start { background: #fff1df; }
 .on-start::before { display: none; }
-.start-hero h1, .start-hero h1 span { color: #e95840; }
-.start-hero .primary { background: #ffc77c; color: #493542; border-color: #cc604c; box-shadow: 0 5px 0 #cc604c; }
-.start-hero .primary:hover { background: #ffd89e; }
-.gesture-cards li { border: 2px solid #444aa1; border-radius: 19px 24px 17px 22px; }
-.gesture-cards h3, .guide-heading h2, .rules-panel h2 { color: #493542; }
+.on-start .shell { width: min(100%, calc(100dvh * 1672 / 941)); min-height: 100dvh; padding: 0; }
+.start-screen { display: block; position: relative; }
+.start-illustration { display: block; width: 100%; height: auto; }
+.start-hero, .start-guide, .start-camera, .start-camera-controls { display: contents; }
 
-@media (min-width: 901px) {
-  .on-start .shell { width: min(100vw, calc(100dvh * 16 / 9)); min-height: 100dvh; padding: 0; }
-  .start-screen { display: block; position: relative; aspect-ratio: 16 / 9; }
-  .start-illustration { display: block; position: absolute; inset: 0; width: 100%; height: 100%; }
-  .start-hero, .start-guide { display: contents; }
-  /* The same copy remains readable to screen readers; its painted version is visible. */
-  .hero-eyebrow, .start-hero h1, .start-hero .intro, .hero-clock-scene,
-  .start-play-hint, .guide-heading, .gesture-cards, .rules-panel {
-    position: absolute; width: 1px; height: 1px; padding: 0; margin: 0;
-    overflow: hidden; clip-path: inset(50%); white-space: nowrap;
-  }
-  .start-hero .primary {
-    position: absolute; left: 7.7%; top: 81.1%; width: 31.4%; height: 14%;
-    max-width: none; min-height: 0; margin: 0; padding: 0; border: 0;
-    border-radius: 45%; background: transparent; color: transparent; box-shadow: none;
-  }
-  .start-hero .primary:hover { background: #fff6d52b; }
-  .start-hero .primary:active { background: #b7513620; transform: translateY(2px); box-shadow: none; }
-  .start-hero .primary span { visibility: hidden; }
-  .start-camera {
-    position: absolute; left: 45.3%; top: 84.8%; width: 53.2%; height: 11.4%;
-    margin: 0; padding: 1% 2%; gap: .4vw 1vw; display: grid;
-    grid-template-columns: auto 1fr; align-content: center;
-    border: 3px solid #454a9d; border-radius: 24px 29px 22px 27px;
-    background: #fff5e6; color: #493542;
-  }
-  .start-camera-label { font: 400 clamp(18px, 1.7vw, 32px)/1 'Jua', sans-serif; }
-  .start-camera-controls { justify-content: end; gap: 1.2vw; }
-  .start-camera-help { grid-column: 1 / -1; font-size: clamp(11px, .85vw, 16px); line-height: 1.3; color: #59494b; }
-  .preview-button { background: #e7d6fa; border: 2px solid #7970b1; border-radius: 45% 35% 38% 29% / 28%; font: 400 clamp(15px, 1.3vw, 24px) 'Jua', sans-serif; }
-  .toggle-control { font-size: clamp(14px, 1.2vw, 22px); }
-  .switch { width: 48px; height: 28px; }.switch::after { width: 20px; height: 20px; }
-  input:checked + .switch { background: #86a95b; border-color: #547c3e; }
-  input:checked + .switch::after { transform: translateX(20px); }
-  #start-camera-status { position: absolute; right: 2%; bottom: .5%; margin: 0; padding: 2px 8px; border-radius: 5px; background: #fff4dfdd; color: #59494b; font-size: clamp(10px, .75vw, 14px); }
+/* 그림에 포함된 내용도 화면 읽기 프로그램에서 읽을 수 있습니다. */
+.start-hero h1, .start-hero .intro, .guide-heading, .gesture-cards, .rules-panel,
+.start-camera-help, #start-camera-status {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: 0;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+.start-hero .primary, .start-camera #preview-button, .start-camera-label, .start-camera .toggle-control {
+  position: absolute; min-height: 0; margin: 0; padding: 0; border: 0;
+  background: transparent; color: transparent; box-shadow: none;
+}
+.start-hero .primary { left: 2.4%; top: 84.8%; width: 22.5%; height: 11%; border-radius: 20% / 45%; }
+.start-hero .primary:active { transform: none; }
+.start-camera-label { left: 50.5%; top: 85.2%; width: 23%; height: 10%; }
+.start-camera #preview-button { left: 75%; top: 86.9%; width: 12.2%; height: 6.3%; border-radius: 50px; }
+.start-camera .toggle-control { left: 88.8%; top: 86.8%; width: 8%; height: 6.4%; border-radius: 50px; }
+.start-camera .switch { display: none; }
+.start-camera .toggle-control:has(input:focus-visible) { outline: 3px solid #5266cc; outline-offset: 3px; }
+.start-camera .toggle-control:has(input:not(:checked)) #camera-setting-state {
+  position: absolute; inset: 8% 4%; display: grid; place-items: center;
+  min-width: 0; border-radius: 50px; background: #645e83; color: white;
+  font: 700 clamp(8px, min(2.2vw, 4dvh), 40px)/1 sans-serif;
 }
 
 /* One shared room coordinate system keeps the webcam masks and moving furniture aligned. */
