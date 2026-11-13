@@ -39,9 +39,17 @@
 .game-controls progress::-moz-progress-bar { background: #f279ab; }
 .game-controls progress { height: 2cqw; }
 .game-controls .sleep-heading strong { color: #2333a1; background: transparent; border: 0; font-size: 1.7cqw; }
-.attack-buttons button { border: 2px solid #2834a2; background: #fff5e5; box-shadow: none; }
-.attack-instruction { margin-top: .3cqw; }
-@media (max-width: 900px) { .attack-buttons .gesture-art { width: 60px; height: 60px; } .game-controls progress { height: 24px; } .game-controls .sleep-heading strong { font-size: 22px; } }
+.attack-buttons button { border: 2px solid #2834a2; background: #fff5e5; box-shadow: none; padding-block: .15cqw; }
+.attack-buttons button > span, .attack-buttons button[data-gesture='tickle'] > span { align-self: center; padding-top: 0; font-size: 1.7cqw; line-height: 1.1; }
+.attack-instruction { margin-top: .12cqw; font-size: 1.25cqw; line-height: 1.1; }
+@media (max-width: 900px) {
+  .attack-buttons .gesture-art { width: 60px; height: 60px; }
+  .attack-buttons button { padding-block: 8px; }
+  .attack-buttons button > span, .attack-buttons button[data-gesture='tickle'] > span { font-size: 25px; }
+  .attack-instruction { margin-top: 4px; font-size: 16px; line-height: 1.2; }
+  .game-controls progress { height: 24px; }
+  .game-controls .sleep-heading strong { font-size: 22px; }
+}
 @media (prefers-reduced-motion: reduce) { .is-tickled .quake-bed::after { animation: none; opacity: 1; } }
 
 /* Fast repeated jolts stay within each furniture group's available space. */
