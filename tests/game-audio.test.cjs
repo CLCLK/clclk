@@ -45,7 +45,7 @@ test('music and quieter clock layer start once; attacks keep their original soun
   assert.ok(nodes.every(node => node.loop));
   assert.equal(nodes[0].buffer.path, 'audio/on-the-other-side.mp3');
   assert.equal(nodes[1].buffer.path, 'audio/clock-ticking.wav');
-  assert.ok(nodes[1].gain.gain.value <= nodes[0].gain.gain.value / 10);
+  assert.ok(nodes[1].gain.gain.value <= nodes[0].gain.gain.value / 2);
   assert.ok(!fetched.includes('audio/bgm.mp3'));
   await audio.play('shake');
   assert.equal(nodes[2].buffer.path, 'audio/shake.mp3');

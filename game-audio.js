@@ -72,8 +72,8 @@ function createGameAudio() {
     const [buffer, ticking] = await Promise.all([load('bgm'), load('clock')]);
     if (buffer && request === generation && wantsMusic) {
       music = source(buffer, 0.25, true);
-      // 같은 음량 보정을 거친 째깍 소리는 음악의 1/10 게인으로 겹칩니다.
-      if (ticking) source(ticking, 0.025, true);
+      // 같은 음량 보정을 거친 째깍 소리는 음악의 절반보다 작은 게인으로 겹칩니다.
+      if (ticking) source(ticking, 0.12, true);
     }
   }
 
