@@ -1,6 +1,6 @@
 // 음악과 효과음을 한 곳에서 관리합니다. 시작 버튼을 누른 뒤에만 소리를 냅니다.
 function createGameAudio() {
-  const files = { bgm: 'on-the-other-side.mp3', clock: 'clock-ticking.wav', shake: 'shake.mp3', tickle: 'tickle.mp3',
+  const files = { bgm: 'on-the-other-side.mp3', clock: 'clock-ticking.wav', shake: 'shake.mp3', tickle: 'tickle-male-laugh-v2.mp3',
     noise: 'noise.mp3', wind: 'wind-gale-v2.wav', win: 'win.mp3', lose: 'lose.wav' };
   const buffers = new Map();
   const sources = new Set();
