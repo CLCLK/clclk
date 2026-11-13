@@ -2,7 +2,7 @@
 .in-game .shell { width: min(100%, calc((100dvh - 4px) * 16 / 9)); }
 .game-room { height: 100%; --room-image: url('gouache-room-v2.png'); --shelf-forward: 0%; }
 .room-backdrop { --room-image: url('gouache-room-v2.png'); }
-.quake-bed, .victory-bed { inset: 45% auto auto 18%; width: 38%; height: 48%; clip-path: none; transform-origin: 50% 90%; --jolt: .65cqw; --tilt: .6deg; }
+.quake-bed, .victory-bed { inset: 45% auto auto 18%; width: 38%; height: 48%; clip-path: none; transform-origin: 50% 90%; --jolt: 1cqw; --tilt: 1.25deg; --hop: .6cqw; }
 .quake-bed { --room-image: url('gouache-bed.png'); }
 .victory-bed { --room-image: url('gouache-empty.png'); }
 .face-art { mask-image: radial-gradient(ellipse 13% 16% at 32% 28%, black 88%, transparent 100%); }
@@ -10,8 +10,8 @@
 .sleep-face[data-expression='near-awake'] { --room-image: url('gouache-awake.png'); }
 .tickle-face { --room-image: url('gouache-tickle.png'); }
 .failure-face { --room-image: url('gouache-failure.png'); }
-.quake-shelf { inset: 39% auto auto 70%; width: 29%; height: 36%; clip-path: none; translate: none; --room-image: url('gouache-shelf.png'); --jolt: -.5cqw; --tilt: -.6deg; transform-origin: 50% 95%; }
-.quake-table { inset: 65% auto auto 49%; width: 36%; height: 34%; mask-image: none; visibility: visible; --room-image: url('gouache-table.png'); }
+.quake-shelf { inset: 39% auto auto 70%; width: 29%; height: 36%; clip-path: none; translate: none; --room-image: url('gouache-shelf.png'); --jolt: -.85cqw; --tilt: -1.6deg; --hop: .38cqw; transform-origin: 50% 95%; }
+.quake-table { inset: 65% auto auto 49%; width: 36%; height: 34%; mask-image: none; visibility: visible; --room-image: url('gouache-table.png'); --jolt: .9cqw; --tilt: 1.1deg; --hop: .38cqw; }
 .quake-floor, .shelf-shadow { display: none; }
 .room-clock { left: 8%; top: 64.6%; width: 8%; height: 7.8%; font-size: 2.8cqw; font-weight: 900; color: #dc4c2c; background: transparent; transform: skewY(-13deg); text-shadow: none; -webkit-text-stroke: .045cqw currentColor; }
 .room-sleep span { margin: 0; }
@@ -29,7 +29,7 @@
 .is-tickled .quake-bed::after { animation: tickle-grin 1150ms ease-in-out both; }
 .victory-pose, .round-won .victory-pose { left: 30%; bottom: 7%; width: 26%; height: 64%; }
 .start-preview-room { background-image: url('gouache-room-v2.png'); aspect-ratio: 2.04; }
-.attack-buttons .gesture-art { background-image: url('gouache-gestures.png'); background-repeat: no-repeat; background-size: 200% 200%; width: 4.4cqw; height: 4.4cqw; margin: 0; }
+.attack-buttons .gesture-art { background-image: url('gouache-gestures.png?v=2'); background-repeat: no-repeat; background-size: 200% 200%; width: 4.4cqw; height: 4.4cqw; margin: 0; }
 .attack-buttons .gesture-art-shake { background-position: 0 0; }
 .attack-buttons .gesture-art-tickle { background-position: 100% 0; }
 .attack-buttons .gesture-art-noise { background-position: 0 100%; }
@@ -43,3 +43,21 @@
 .attack-instruction { margin-top: .3cqw; }
 @media (max-width: 900px) { .attack-buttons .gesture-art { width: 60px; height: 60px; } .game-controls progress { height: 24px; } .game-controls .sleep-heading strong { font-size: 22px; } }
 @media (prefers-reduced-motion: reduce) { .is-tickled .quake-bed::after { animation: none; opacity: 1; } }
+
+/* Fast repeated jolts stay within each furniture group's available space. */
+.quake-table .room-art { transform-origin: 50% 75%; }
+.is-shaking .quake-object, .is-shaking .quake-layer .room-art { animation: gouache-quake 900ms linear both; }
+.is-shaking .shake-lines span { animation-duration: 900ms; }
+@keyframes gouache-quake {
+  0%, 100% { transform: translate(0) rotate(0deg); }
+  7%, 23%, 39% { transform: translate(var(--jolt), calc(-1 * var(--hop))) rotate(var(--tilt)); }
+  15%, 31%, 47% { transform: translate(calc(-1 * var(--jolt)), .15cqw) rotate(calc(-1 * var(--tilt))); }
+  56% { transform: translate(calc(.75 * var(--jolt)), calc(-.65 * var(--hop))) rotate(calc(.75 * var(--tilt))); }
+  65% { transform: translate(calc(-.6 * var(--jolt)), .1cqw) rotate(calc(-.6 * var(--tilt))); }
+  74% { transform: translate(calc(.42 * var(--jolt)), calc(-.3 * var(--hop))) rotate(calc(.4 * var(--tilt))); }
+  83% { transform: translate(calc(-.26 * var(--jolt)), 0) rotate(calc(-.25 * var(--tilt))); }
+  92% { transform: translate(calc(.12 * var(--jolt)), 0) rotate(calc(.1 * var(--tilt))); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .is-shaking .quake-object, .is-shaking .quake-layer .room-art { animation: none; }
+}

@@ -52,11 +52,12 @@ function createGameAudio() {
     context.resume().catch(error => console.warn('소리를 다시 켜 주세요.', error));
   }
 
-  function source(buffer, volume, loop = false) {
+  function source(buffer, volume, loop = false, playbackRate = 1) {
     const node = context.createBufferSource();
     const gain = context.createGain();
     node.buffer = buffer;
     node.loop = loop;
+    node.playbackRate.value = playbackRate;
     gain.gain.value = volume;
     node.connect(gain).connect(master);
     sources.add(node);
@@ -73,7 +74,7 @@ function createGameAudio() {
     if (buffer && request === generation && wantsMusic) {
       music = source(buffer, 0.25, true);
       // 같은 음량 보정을 거친 째깍 소리는 음악의 절반보다 작은 게인으로 겹칩니다.
-      if (ticking) source(ticking, 0.12, true);
+      if (ticking) source(ticking, 0.12, true, 1.5);
     }
   }
 

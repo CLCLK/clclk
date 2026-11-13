@@ -18,7 +18,7 @@ function setup({ delayMusic = false } = {}) {
       return gain;
     }
     createBufferSource() {
-      const node = { stopped: false, connect(gain) { this.gain = gain; return gain; },
+      const node = { stopped: false, playbackRate: { value: 1 }, connect(gain) { this.gain = gain; return gain; },
         disconnect() {}, start() { nodes.push(this); },
         stop() { this.stopped = true; this.onended?.(); }, addEventListener() {} };
       return node;
@@ -45,11 +45,14 @@ test('music and quieter clock layer start once; attacks keep their original soun
   assert.ok(nodes.every(node => node.loop));
   assert.equal(nodes[0].buffer.path, 'audio/on-the-other-side.mp3');
   assert.equal(nodes[1].buffer.path, 'audio/clock-ticking.wav');
+  assert.equal(nodes[0].playbackRate.value, 1);
+  assert.equal(nodes[1].playbackRate.value, 1.5);
   assert.ok(nodes[1].gain.gain.value <= nodes[0].gain.gain.value / 2);
   assert.ok(!fetched.includes('audio/bgm.mp3'));
   await audio.play('shake');
   assert.equal(nodes[2].buffer.path, 'audio/shake.mp3');
   assert.equal(nodes[2].gain.gain.value, .8);
+  assert.equal(nodes[2].playbackRate.value, 1);
   assert.ok(nodes.slice(0, 2).every(node => !node.stopped));
 });
 

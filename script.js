@@ -244,6 +244,7 @@ function showAttack(gestureId) {
     // 다른 공격에서 넘어와도 흔들림 애니메이션을 처음부터 재생합니다.
     void gameRoom.offsetWidth;
     gameRoom.classList.add("is-shaking");
+    duration = 940;
   } else if (gestureId === "tickle") {
     void gameRoom.offsetWidth;
     gameRoom.classList.add("is-tickled");
@@ -273,7 +274,7 @@ function finishRound(won) {
   title.textContent = won ? "기상 성공!" : "무단 결근!";
   byId("result-stamp").textContent = won ? "✦" : "Zz";
   byId("result-eyebrow").textContent = won ? "오늘의 기상 미션 완료" : "앗, 벌써 오전 8시";
-  byId("result-message").textContent = won ? "오늘도 출근할게요" : "이번 달은 …";
+  byId("result-message").textContent = won ? "오늘도 출근할게요" : "오늘은 못가겠어요~";
   resultScreen.hidden = false;
   title.focus({ preventScroll: true });
 }
