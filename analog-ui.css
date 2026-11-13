@@ -1,0 +1,113 @@
+/* 승인한 손그림 시안. 그림 위의 실제 HTML 버튼으로 키보드도 사용할 수 있습니다. */
+.start-illustration { display: none; }
+.on-start { background: #fff1df; }
+.on-start::before { display: none; }
+.start-hero h1, .start-hero h1 span { color: #e95840; }
+.start-hero .primary { background: #ffc77c; color: #493542; border-color: #cc604c; box-shadow: 0 5px 0 #cc604c; }
+.start-hero .primary:hover { background: #ffd89e; }
+.gesture-cards li { border: 2px solid #444aa1; border-radius: 19px 24px 17px 22px; }
+.gesture-cards h3, .guide-heading h2, .rules-panel h2 { color: #493542; }
+
+@media (min-width: 901px) {
+  .on-start .shell { width: min(100vw, calc(100dvh * 16 / 9)); min-height: 100dvh; padding: 0; }
+  .start-screen { display: block; position: relative; aspect-ratio: 16 / 9; }
+  .start-illustration { display: block; position: absolute; inset: 0; width: 100%; height: 100%; }
+  .start-hero, .start-guide { display: contents; }
+  /* The same copy remains readable to screen readers; its painted version is visible. */
+  .hero-eyebrow, .start-hero h1, .start-hero .intro, .hero-clock-scene,
+  .start-play-hint, .guide-heading, .gesture-cards, .rules-panel {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: 0;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
+  .start-hero .primary {
+    position: absolute; left: 7.7%; top: 81.1%; width: 31.4%; height: 14%;
+    max-width: none; min-height: 0; margin: 0; padding: 0; border: 0;
+    border-radius: 45%; background: transparent; color: transparent; box-shadow: none;
+  }
+  .start-hero .primary:hover { background: #fff6d52b; }
+  .start-hero .primary:active { background: #b7513620; transform: translateY(2px); box-shadow: none; }
+  .start-hero .primary span { visibility: hidden; }
+  .start-camera {
+    position: absolute; left: 45.3%; top: 84.8%; width: 53.2%; height: 11.4%;
+    margin: 0; padding: 1% 2%; gap: .4vw 1vw; display: grid;
+    grid-template-columns: auto 1fr; align-content: center;
+    border: 3px solid #454a9d; border-radius: 24px 29px 22px 27px;
+    background: #fff5e6; color: #493542;
+  }
+  .start-camera-label { font: 400 clamp(18px, 1.7vw, 32px)/1 'Jua', sans-serif; }
+  .start-camera-controls { justify-content: end; gap: 1.2vw; }
+  .start-camera-help { grid-column: 1 / -1; font-size: clamp(11px, .85vw, 16px); line-height: 1.3; color: #59494b; }
+  .preview-button { background: #e7d6fa; border: 2px solid #7970b1; border-radius: 45% 35% 38% 29% / 28%; font: 400 clamp(15px, 1.3vw, 24px) 'Jua', sans-serif; }
+  .toggle-control { font-size: clamp(14px, 1.2vw, 22px); }
+  .switch { width: 48px; height: 28px; }.switch::after { width: 20px; height: 20px; }
+  input:checked + .switch { background: #86a95b; border-color: #547c3e; }
+  input:checked + .switch::after { transform: translateX(20px); }
+  #start-camera-status { position: absolute; right: 2%; bottom: .5%; margin: 0; padding: 2px 8px; border-radius: 5px; background: #fff4dfdd; color: #59494b; font-size: clamp(10px, .75vw, 14px); }
+}
+
+/* One shared room coordinate system keeps the webcam masks and moving furniture aligned. */
+.in-game { background: #fff1df; }
+.in-game .shell { width: min(100vw, calc(100dvh * 16 / 9)); padding: 0; min-height: 100dvh; }
+.play-screen { container-type: inline-size; }
+.room-viewport { overflow: hidden; aspect-ratio: 2.04; }
+.game-room { height: 106%; aspect-ratio: auto; border-radius: 0; box-shadow: none; }
+.game-controls {
+  height: 7.23cqw; min-height: 0; grid-template-columns: 21% minmax(0, 1fr) 10.5%;
+  gap: 1cqw; padding: .65cqw 1.3cqw; border: 0; border-top: 3px solid #444aa1;
+  border-radius: 0; box-shadow: none; background: #fff4e3; color: #493d42;
+}
+.sleep-control { min-width: 0; }
+.game-controls .sleep-heading { flex-wrap: nowrap; gap: .4cqw; }
+.sleep-heading label { gap: 0; font-size: 1.65cqw; color: #493d42; }
+.sleep-symbol, .sleep-scale { display: none; }
+.game-controls .sleep-heading strong { padding: .15cqw .4cqw; font-size: 1.45cqw; color: #d35138; background: #ffebce; border: 1px solid #d6ad77; border-radius: 12px 8px; }
+.game-controls progress { height: 1.7cqw; margin-top: .45cqw; padding: 0; border: 2px solid #404ba8; border-radius: 9px 12px 8px 11px; background: #e9e5f2; }
+.game-controls progress::-webkit-progress-bar { background: #e9e5f2; border-radius: 0; }
+.game-controls progress::-webkit-progress-value { border-radius: 0; background: repeating-linear-gradient(90deg, transparent 0 calc(10% - 2px), #404ba8 calc(10% - 2px) 10%), linear-gradient(#d3e1ff, #8599f1); }
+.game-controls progress::-moz-progress-bar { border-radius: 0; background: repeating-linear-gradient(90deg, transparent 0 calc(10% - 2px), #404ba8 calc(10% - 2px) 10%), linear-gradient(#d3e1ff, #8599f1); }
+.game-controls .feedback { margin-top: .35cqw; min-height: 0; height: 2.25em; overflow: hidden; font-size: .87cqw; line-height: 1.15; color: #59494b; }
+.attack-buttons { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .55cqw; --guide-art-height: 3.4cqw; }
+.attack-buttons button {
+  position: relative; flex-direction: row; justify-content: start; text-align: left;
+  min-width: 0; min-height: 0; height: 5.55cqw; gap: .3cqw; padding: .45cqw;
+  border: 1.5px solid #b69c99; border-radius: 17px 20px 14px 18px;
+  background: #ffead5; box-shadow: 0 2px 0 #696aaf; color: #493d42;
+}
+.attack-buttons button::after { content: attr(data-duration); position: absolute; right: .5cqw; top: .3cqw; padding: .12cqw .35cqw; background: #ffc8a7; color: #b64a37; border-radius: 42% 35%; font: 400 1.05cqw 'Jua', sans-serif; }
+.attack-buttons button > span { align-self: stretch; padding-top: .15cqw; font-size: 1.45cqw; line-height: 1.15; min-width: 0; }
+.attack-buttons button[data-gesture='tickle'] > span { font-size: 1.3cqw; }
+.attack-buttons .gesture-art { width: 3.2cqw; margin-top: .75cqw; }
+.attack-instruction { margin-top: .7cqw; font: 400 1.02cqw/1.2 'Jua', sans-serif; color: #59494b; letter-spacing: -.04em; }
+.attack-buttons button[data-gesture='tickle'] { background: #ffeddf; }
+.attack-buttons button[data-gesture='noise'] { background: #ffe2e9; }
+.attack-buttons button[data-gesture='wind'] { background: #e4edff; }
+.attack-buttons button.is-active { background: #ffce81; border-color: #bc654a; }
+.game-actions { gap: .2cqw; border-left: 2px solid #9690a4; padding-left: .65cqw; }
+.game-actions button, #replay-button { min-height: 0; padding: .2cqw 0; border: 0; border-radius: 0; border-bottom: 1px solid #bea99e; font: 400 1.05cqw 'Jua', sans-serif; background: transparent; color: #493d42; }
+.game-actions strong { color: #d65335; }
+#replay-button:hover, .game-actions button:hover { background: #ffdfae; }
+
+.round-result { border: 3px solid #42489c; border-radius: 6% 4% 5% 3%; background: repeating-linear-gradient(0deg, transparent 0 34px, #c7b8a32b 35px 36px), #fff4df; box-shadow: 6px 9px 0 #473d6b45, 0 15px 65px #392e4b38; }
+.round-result::before { content: ''; position: absolute; top: -1.1cqw; left: 30%; width: 40%; height: 2.2cqw; transform: rotate(-4deg); background: repeating-linear-gradient(90deg, #ffffff44 0 10px, transparent 10px 20px), repeating-linear-gradient(0deg, #ffffff44 0 10px, transparent 10px 20px), #e9a8b9; opacity: .95; }
+.round-result h2 { color: #db6445; text-shadow: 2px 3px #ffdfaa; }
+.round-result p { color: #51404a; font-family: 'Jua', sans-serif; }
+.result-stamp { background: transparent; color: #e8a644; }
+.result-eyebrow { color: #77616a; }
+#result-replay-button { background: #ffcc84; color: #563c43; box-shadow: 0 4px #c87b58; border: 2px solid #b87054; border-radius: 14px 19px 12px 17px; }
+#result-replay-button:hover { background: #ffdb9e; }
+
+@media (max-width: 900px) {
+  .in-game .shell { width: 100%; }
+  .game-controls { height: auto; grid-template-columns: 1fr; padding: 14px; gap: 12px; }
+  .sleep-heading label { font-size: 23px; }.game-controls .sleep-heading strong { font-size: 22px; }
+  .game-controls progress { height: 24px; margin-top: 8px; }.game-controls .feedback { font-size: 13px; height: 2.3em; }
+  .attack-buttons { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; --guide-art-height: 48px; }
+  .attack-buttons button { height: 100px; padding: 8px; gap: 8px; }
+  .attack-buttons button > span, .attack-buttons button[data-gesture='tickle'] > span { font-size: 21px; padding-top: 14px; }
+  .attack-buttons .gesture-art { width: 47px; }.attack-buttons button::after { font-size: 13px; top: 4px; right: 7px; }
+  .attack-instruction { font-size: 13px; margin-top: 8px; }
+  .game-actions { grid-template-columns: repeat(3, 1fr); border: 0; padding: 0; }
+  .game-actions button, #replay-button { font-size: 15px; padding: 8px; }
+}
+
+.room-clock { font-family: "Courier New", monospace; font-weight: 700; letter-spacing: -.08em; }
