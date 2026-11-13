@@ -17,7 +17,8 @@
   background: transparent; color: transparent; box-shadow: none;
 }
 .start-hero .primary { left: 2.4%; top: 84.8%; width: 22.5%; height: 11%; border-radius: 20% / 45%; }
-.start-hero .primary:active { transform: none; }
+.start-hero .primary:hover, .start-hero .primary:active { background: transparent; color: transparent; box-shadow: none; transform: none; }
+.start-hero .primary:hover { outline: 3px solid #343887; outline-offset: 2px; }
 .start-camera-label { left: 50.5%; top: 85.2%; width: 23%; height: 10%; }
 .start-camera #preview-button { left: 75%; top: 86.9%; width: 12.2%; height: 6.3%; border-radius: 50px; }
 .start-camera .toggle-control { left: 88.8%; top: 86.8%; width: 8%; height: 6.4%; border-radius: 50px; }
