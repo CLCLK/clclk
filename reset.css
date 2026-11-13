@@ -1,0 +1,15 @@
+.reset-button {
+  position: fixed;
+  z-index: 20;
+  top: 12px;
+  right: 12px;
+  padding: 5px 10px;
+  border: 1px solid #343887;
+  border-radius: 8px;
+  background: #fff5e5;
+  color: #343887;
+  font: 16px 'Jua', sans-serif;
+}
+
+.reset-button:hover { background: #ffdfae; }
+.reset-button kbd { margin-left: 3px; font-size: 13px; }

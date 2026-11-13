@@ -20,6 +20,8 @@
   <link rel="preload" href="gouache-tickle.png" as="image">
   <link rel="preload" href="gouache-empty.png" as="image">
   <link rel="preload" href="gouache-failure.png" as="image">
+  <link rel="stylesheet" href="reset.css">
+  <script src="reset.js" defer></script>
   <script src="motion-input.js?v=gouache-1" defer></script>
   <script src="room-effects.js?v=gouache-1" defer></script>
   <script src="camera-framing.js?v=20261113-analog-audio1" defer></script>
@@ -33,6 +35,7 @@
   <script src="script.js?v=gouache-effects-3" defer></script>
 </head>
 <body class="on-start">
+  <button class="reset-button" id="reset-button" type="button" aria-keyshortcuts="R">리셋 <kbd>R</kbd></button>
   <div class="shell">
     <main>
       <section class="start-screen" id="start-screen" aria-labelledby="game-title">
