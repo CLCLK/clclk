@@ -1,6 +1,6 @@
 // 음악과 효과음을 한 곳에서 관리합니다. 시작 버튼을 누른 뒤에만 소리를 냅니다.
 function createGameAudio() {
-  const files = { bgm: 'bgm.mp3', shake: 'shake.mp3', tickle: 'tickle.mp3',
+  const files = { bgm: 'on-the-other-side.mp3', clock: 'clock-ticking.wav', shake: 'shake.mp3', tickle: 'tickle.mp3',
     noise: 'noise.mp3', wind: 'wind.mp3', win: 'win.mp3', lose: 'lose.wav' };
   const buffers = new Map();
   const sources = new Set();
@@ -69,8 +69,12 @@ function createGameAudio() {
     if (!context || wantsMusic) return;
     wantsMusic = true;
     const request = generation;
-    const buffer = await load('bgm');
-    if (buffer && request === generation && wantsMusic) music = source(buffer, 0.25, true);
+    const [buffer, ticking] = await Promise.all([load('bgm'), load('clock')]);
+    if (buffer && request === generation && wantsMusic) {
+      music = source(buffer, 0.25, true);
+      // 같은 음량 보정을 거친 째깍 소리는 음악의 1/10 게인으로 겹칩니다.
+      if (ticking) source(ticking, 0.025, true);
+    }
   }
 
   async function play(name) {

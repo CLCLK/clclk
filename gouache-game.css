@@ -13,7 +13,7 @@
 .quake-shelf { inset: 39% auto auto 70%; width: 29%; height: 36%; clip-path: none; translate: none; --room-image: url('gouache-shelf.png'); --jolt: -.5cqw; --tilt: -.6deg; transform-origin: 50% 95%; }
 .quake-table { inset: 65% auto auto 49%; width: 36%; height: 34%; mask-image: none; visibility: visible; --room-image: url('gouache-table.png'); }
 .quake-floor, .shelf-shadow { display: none; }
-.room-clock { left: 8%; top: 64.6%; width: 8%; height: 7.8%; font-size: 2.3cqw; font-weight: 900; color: #ffad7a; background: transparent; transform: skewY(-13deg); text-shadow: 0 0 .12cqw #ff704a; -webkit-text-stroke: .035cqw currentColor; }
+.room-clock { left: 8%; top: 64.6%; width: 8%; height: 7.8%; font-size: 2.8cqw; font-weight: 900; color: #dc4c2c; background: transparent; transform: skewY(-13deg); text-shadow: none; -webkit-text-stroke: .045cqw currentColor; }
 .room-sleep span { margin: 0; }
 .room-sleep span:nth-child(1) { left: 28%; top: 43%; }
 .room-sleep span:nth-child(2) { left: 29.5%; top: 39.5%; }
