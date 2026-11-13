@@ -8,9 +8,22 @@
 
 /* 그림에 포함된 내용도 화면 읽기 프로그램에서 읽을 수 있습니다. */
 .start-hero h1, .start-hero .intro, .guide-heading, .gesture-cards, .rules-panel,
-.start-camera-help, #start-camera-status {
+.start-camera-help {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: 0;
   overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+#start-camera-status {
+  position: absolute;
+  right: 3%;
+  bottom: 15%;
+  max-width: 47%;
+  margin: 0;
+  padding: .35em .65em;
+  border: 1px solid #b97354;
+  border-radius: 8px;
+  background: #fff5e5;
+  color: #7a3429;
+  font-size: clamp(10px, min(1.25vw, 2.2dvh), 20px);
 }
 .start-hero .primary, .start-camera #preview-button, .start-camera-label, .start-camera .toggle-control {
   position: absolute; min-height: 0; margin: 0; padding: 0; border: 0;

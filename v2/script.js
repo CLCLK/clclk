@@ -16,14 +16,10 @@ const startCameraStatus = byId("start-camera-status");
 const gameCameraStatus = byId("game-camera-status");
 const windowCamera = createWindowCamera(cameraCanvas, (state, message) => {
   startCameraStatus.textContent = message;
-  startCameraStatus.hidden = !message;
+  startCameraStatus.hidden = state !== "error" && state !== "window-error";
   byId("preview-camera-status").textContent = message;
   gameCameraStatus.textContent = message;
   gameCameraStatus.hidden = !message || state === "live";
-  if (state === "error") {
-    cameraToggle.checked = false;
-    byId("camera-setting-state").textContent = "OFF";
-  }
 }, (video, time) => {
   if (phase === "countdown" || phase === "playing") {
     handMotion.update(video, time, phase === "playing");
