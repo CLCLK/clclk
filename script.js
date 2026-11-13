@@ -80,10 +80,7 @@ for (const [index, gesture] of gestures.entries()) {
   guideMeta.className = "gesture-meta";
   const guideNumber = document.createElement("span");
   guideNumber.textContent = `0${index + 1}`;
-  const guideDuration = document.createElement("span");
-  guideDuration.className = "gesture-duration";
-  guideDuration.textContent = gesture.duration;
-  guideMeta.append(guideNumber, guideDuration);
+  guideMeta.append(guideNumber);
   const illustration = document.createElement("div");
   illustration.className = `gesture-art gesture-art-${gesture.id}`;
   illustration.setAttribute("aria-hidden", "true");
